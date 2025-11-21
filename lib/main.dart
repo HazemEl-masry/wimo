@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wimo/features/onboarding/presentation/screens/onboarding_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,6 +11,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp();
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: "Wimo",
+      home: OnboardingScreen(),
+    );
   }
 }
