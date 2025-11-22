@@ -4,7 +4,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:wimo/core/constants/app_constants.dart';
 import 'package:wimo/core/utils/color_utils.dart';
 import 'package:wimo/core/utils/responsive_utils.dart';
-import 'package:wimo/features/home/home_screen.dart';
+import 'package:wimo/features/home/presentation/screens/home_screen.dart';
 import 'package:wimo/features/onboarding/data/repositories/onboarding_repository_impl.dart';
 import 'package:wimo/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:wimo/features/onboarding/presentation/bloc/onboarding_event.dart';
