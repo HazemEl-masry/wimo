@@ -8,24 +8,24 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
   List<OnboardingItem> getOnboardingItems() {
     return [
       OnboardingItem(
-        title: 'Connect with your Friends',
+        title: 'Stay Connected',
         description:
-            'Experience social networking in augmented reality and connect with friends in a whole new dimension',
-        iconData: Icons.chat,
+            'Chat with friends and family in real-time. Send messages, photos, and videos instantly',
+        iconData: Icons.chat_bubble_rounded,
         colorHex: '#6C63FF',
       ),
       OnboardingItem(
-        title: 'Share Moments',
+        title: 'Group Conversations',
         description:
-            'Share your favorite moments with AR filters and effects that bring your stories to life',
-        iconData: Icons.center_focus_strong,
+            'Create group chats to stay in touch with multiple people. Share moments and have fun together',
+        iconData: Icons.groups_rounded,
         colorHex: '#FF6584',
       ),
       OnboardingItem(
-        title: 'Explore Together',
+        title: 'Secure & Private',
         description:
-            'Discover new places and experiences with your friends using interactive AR features',
-        iconData: Icons.explore,
+            'Your conversations are encrypted and secure. Chat with confidence knowing your privacy is protected',
+        iconData: Icons.verified_user_rounded,
         colorHex: '#4CAF50',
       ),
     ];

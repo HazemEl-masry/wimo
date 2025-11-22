@@ -80,11 +80,7 @@ class OnboardingPageWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Icon(
-                  Icons.view_in_ar_rounded,
-                  size: iconSize,
-                  color: Colors.white,
-                ),
+                child: Icon(item.iconData, size: iconSize, color: Colors.white),
               ),
             ),
           ),
