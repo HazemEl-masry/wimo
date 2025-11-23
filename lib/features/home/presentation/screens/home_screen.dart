@@ -10,9 +10,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // toolbarHeight: 50.h,
-        backgroundColor: Colors.transparent,
-        centerTitle: false,
+        actionsPadding: EdgeInsets.only(right: 10.w),
         title: TextButton(
           onLongPress: () {},
           onPressed: () {},
