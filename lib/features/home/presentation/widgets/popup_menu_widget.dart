@@ -15,9 +15,9 @@ class PopupMenuWidget extends StatelessWidget {
           PopupMenuItem(
             child: Row(
               children: [
-                const Icon(Icons.notifications),
+                const Icon(Icons.settings),
                 SizedBox(width: MediaQuery.of(context).size.width * 0.05),
-                const Text("Notifications"),
+                const Text("Settings"),
               ],
             ),
           ),
