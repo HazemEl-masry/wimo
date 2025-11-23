@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:wimo/features/home/presentation/widgets/popup_menu_widget.dart';
+import 'package:wimo/features/home/presentation/widgets/profile_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -24,7 +24,7 @@ class HomeScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(onPressed: () {}, icon: const Icon(Icons.dark_mode)),
-          const PopupMenuWidget(),
+          const ProfileWidget(),
         ],
       ),
     );
