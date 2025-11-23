@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:wimo/core/constants/app_constants.dart';
 import 'package:wimo/core/utils/color_utils.dart';
-import 'package:wimo/core/utils/responsive_utils.dart';
 import 'package:wimo/features/home/presentation/screens/home_screen.dart';
 import 'package:wimo/features/onboarding/data/repositories/onboarding_repository_impl.dart';
 import 'package:wimo/features/onboarding/presentation/bloc/onboarding_bloc.dart';
@@ -63,9 +62,7 @@ class _OnboardingViewState extends State<OnboardingView> {
           if (state.currentPage != currentPageIndex) {
             _pageController.animateToPage(
               state.currentPage,
-              duration: const Duration(
-                milliseconds: AppConstants.animationDurationMedium,
-              ),
+              duration: const Duration(milliseconds: 400),
               curve: Curves.easeInOut,
             );
           }
@@ -78,134 +75,98 @@ class _OnboardingViewState extends State<OnboardingView> {
           );
         }
 
-        // Get responsive padding
-        final horizontalPadding = ResponsiveUtils.getResponsiveValue(
-          context: context,
-          mobile: AppConstants.spacingLarge,
-          tablet: AppConstants.spacingXLarge,
-          desktop: AppConstants.spacingXXLarge,
-        );
-
-        final buttonBottomPadding = ResponsiveUtils.getResponsiveValue(
-          context: context,
-          mobile: AppConstants.spacingXLarge,
-          tablet: AppConstants.spacingXXLarge,
-          desktop: AppConstants.spacingXXLarge,
-        );
-
         return Scaffold(
           body: SafeArea(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(horizontalPadding),
-                      child: Align(
-                        alignment: Alignment.topRight,
-                        child: TextButton(
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(16.w),
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: TextButton(
+                      onPressed: () {
+                        context.read<OnboardingBloc>().add(
+                          OnboardingSkipPressed(),
+                        );
+                      },
+                      child: Text(
+                        'Skip',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey,
+                            ),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: PageView.builder(
+                    controller: _pageController,
+                    onPageChanged: (index) {
+                      context.read<OnboardingBloc>().add(
+                        OnboardingPageChanged(index),
+                      );
+                    },
+                    itemCount: state.items.length,
+                    itemBuilder: (context, index) {
+                      return OnboardingPageWidget(item: state.items[index]);
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 16.h,
+                  ),
+                  child: Column(
+                    children: [
+                      SmoothPageIndicator(
+                        controller: _pageController,
+                        count: state.items.length,
+                        effect: ExpandingDotsEffect(
+                          activeDotColor: ColorUtils.hexToColor(
+                            state.items[state.currentPage].colorHex,
+                          ),
+                          dotColor: Colors.grey.shade300,
+                          dotHeight: 8.h,
+                          dotWidth: 8.w,
+                          expansionFactor: 4,
+                        ),
+                      ),
+                      SizedBox(height: 20.h),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: 45.h,
+                        child: ElevatedButton(
                           onPressed: () {
                             context.read<OnboardingBloc>().add(
-                              OnboardingSkipPressed(),
+                              OnboardingNextPressed(),
                             );
                           },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: ColorUtils.hexToColor(
+                              state.items[state.currentPage].colorHex,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16.r),
+                            ),
+                            elevation: 0,
+                          ),
                           child: Text(
-                            'Skip',
-                            style: Theme.of(context).textTheme.titleMedium
+                            state.isLastPage ? 'Get Started' : 'Next',
+                            style: Theme.of(context).textTheme.labelLarge
                                 ?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey,
+                                  fontSize: 22.sp,
+                                  color: Colors.white,
                                 ),
                           ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: PageView.builder(
-                        controller: _pageController,
-                        onPageChanged: (index) {
-                          context.read<OnboardingBloc>().add(
-                            OnboardingPageChanged(index),
-                          );
-                        },
-                        itemCount: state.items.length,
-                        itemBuilder: (context, index) {
-                          return OnboardingPageWidget(item: state.items[index]);
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: horizontalPadding,
-                        vertical: buttonBottomPadding,
-                      ),
-                      child: Column(
-                        children: [
-                          SmoothPageIndicator(
-                            controller: _pageController,
-                            count: state.items.length,
-                            effect: ExpandingDotsEffect(
-                              activeDotColor: ColorUtils.hexToColor(
-                                state.items[state.currentPage].colorHex,
-                              ),
-                              dotColor: Colors.grey.shade300,
-                              dotHeight: AppConstants.spacingSmall,
-                              dotWidth: AppConstants.spacingSmall,
-                              expansionFactor: 4,
-                            ),
-                          ),
-                          SizedBox(
-                            height: ResponsiveUtils.getResponsiveValue(
-                              context: context,
-                              mobile: AppConstants.spacingXLarge,
-                              tablet: AppConstants.spacingXXLarge,
-                            ),
-                          ),
-                          SizedBox(
-                            width: ResponsiveUtils.getResponsiveValue(
-                              context: context,
-                              mobile: double.infinity,
-                              tablet: 400.0,
-                              desktop: 450.0,
-                            ),
-                            height: AppConstants.buttonHeight,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                context.read<OnboardingBloc>().add(
-                                  OnboardingNextPressed(),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: ColorUtils.hexToColor(
-                                  state.items[state.currentPage].colorHex,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    AppConstants.borderRadiusLarge,
-                                  ),
-                                ),
-                                elevation: 0,
-                              ),
-                              child: Text(
-                                state.isLastPage ? 'Get Started' : 'Next',
-                                style: Theme.of(context).textTheme.labelLarge
-                                    ?.copyWith(
-                                      fontSize:
-                                          ResponsiveUtils.getResponsiveFontSize(
-                                            context: context,
-                                            baseFontSize:
-                                                AppConstants.fontSizeLarge,
-                                          ),
-                                    ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              },
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         );

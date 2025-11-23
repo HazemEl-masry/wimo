@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wimo/core/constants/app_constants.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wimo/core/utils/color_utils.dart';
-import 'package:wimo/core/utils/responsive_utils.dart';
 import 'package:wimo/features/onboarding/domain/entities/onboarding_item.dart';
 
 class OnboardingPageWidget extends StatelessWidget {
@@ -13,58 +12,22 @@ class OnboardingPageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = ColorUtils.hexToColor(item.colorHex);
 
-    // Get responsive sizes
-    final outerCircleSize = ResponsiveUtils.getResponsiveValue(
-      context: context,
-      mobile: AppConstants.onboardingCircleLarge,
-      tablet: AppConstants.onboardingCircleLarge * 1.2,
-      desktop: AppConstants.onboardingCircleLarge * 1.5,
-    );
-
-    final innerCircleSize = ResponsiveUtils.getResponsiveValue(
-      context: context,
-      mobile: AppConstants.onboardingCircleMedium,
-      tablet: AppConstants.onboardingCircleMedium * 1.2,
-      desktop: AppConstants.onboardingCircleMedium * 1.5,
-    );
-
-    final iconSize = ResponsiveUtils.getResponsiveValue(
-      context: context,
-      mobile: AppConstants.iconSizeXXLarge,
-      tablet: AppConstants.iconSizeXXLarge * 1.2,
-      desktop: AppConstants.iconSizeXXLarge * 1.5,
-    );
-
-    final horizontalPadding = ResponsiveUtils.getResponsiveValue(
-      context: context,
-      mobile: AppConstants.spacingXXLarge,
-      tablet: AppConstants.spacingXXLarge * 1.5,
-      desktop: AppConstants.spacingXXLarge * 2,
-    );
-
-    final spacingAfterCircle = ResponsiveUtils.getResponsiveValue(
-      context: context,
-      mobile: AppConstants.spacingXXXLarge,
-      tablet: AppConstants.spacingXXXLarge * 1.2,
-      desktop: AppConstants.spacingXXXLarge * 1.5,
-    );
-
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: outerCircleSize,
-            height: outerCircleSize,
+            width: 250.w,
+            height: 250.w,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Center(
               child: Container(
-                width: innerCircleSize,
-                height: innerCircleSize,
+                width: 150.w,
+                height: 150.w,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [color, color.withValues(alpha: 0.7)],
@@ -80,38 +43,27 @@ class OnboardingPageWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Icon(item.iconData, size: iconSize, color: Colors.white),
+                child: Icon(item.iconData, size: 100.w, color: Colors.white),
               ),
             ),
           ),
-          SizedBox(height: spacingAfterCircle),
+          SizedBox(height: 25.h),
           Text(
             item.title,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.displayLarge?.copyWith(
-              fontSize: ResponsiveUtils.getResponsiveFontSize(
-                context: context,
-                baseFontSize: AppConstants.fontSizeXXLarge,
-              ),
+              fontSize: 28.sp,
+              fontWeight: FontWeight.bold,
               color: const Color(0xFF2D3142),
             ),
           ),
-          SizedBox(
-            height: ResponsiveUtils.getResponsiveValue(
-              context: context,
-              mobile: AppConstants.spacingLarge,
-              tablet: AppConstants.spacingXLarge,
-            ),
-          ),
+          SizedBox(height: 10.h),
           Text(
             item.description,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontSize: ResponsiveUtils.getResponsiveFontSize(
-                context: context,
-                baseFontSize: AppConstants.fontSizeMedium,
-              ),
-            ),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 16.sp),
           ),
         ],
       ),

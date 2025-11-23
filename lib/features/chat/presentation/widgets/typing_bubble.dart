@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wimo/core/constants/app_constants.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// A typing indicator bubble widget with animated dots
 ///
@@ -29,22 +29,20 @@ class _TypingBubbleState extends State<TypingBubble>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(
-        milliseconds: AppConstants.typingBubbleAnimationDuration,
-      ),
+      duration: const Duration(milliseconds: 1000),
     )..repeat();
 
     _anim1 = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.0, 0.6, curve: Curves.easeInOut),
+      curve: const Interval(0.2, 0.8, curve: Curves.easeInOut),
     );
     _anim2 = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.2, 0.8, curve: Curves.easeInOut),
+      curve: const Interval(0.4, 0.9, curve: Curves.easeInOut),
     );
     _anim3 = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.4, 1.0, curve: Curves.easeInOut),
+      curve: const Interval(0.6, 1.0, curve: Curves.easeInOut),
     );
   }
 
@@ -52,16 +50,16 @@ class _TypingBubbleState extends State<TypingBubble>
     return AnimatedBuilder(
       animation: anim,
       builder: (_, child) {
-        final translateY = -AppConstants.typingBubbleDotJumpHeight * anim.value;
-        final scale = 0.6 + anim.value * 0.4;
+        final translateY = -7 * anim.value;
+        final scale = 0.6 + anim.value * 0.3;
         return Transform.translate(
           offset: Offset(0, translateY),
           child: Transform.scale(scale: scale, child: child),
         );
       },
       child: Container(
-        width: AppConstants.typingBubbleDotSize,
-        height: AppConstants.typingBubbleDotSize,
+        width: 9.w,
+        height: 18.h,
         decoration: BoxDecoration(
           color: widget.isMe ? Colors.white : Colors.grey.shade700,
           shape: BoxShape.circle,
@@ -81,32 +79,23 @@ class _TypingBubbleState extends State<TypingBubble>
     final bubbleColor = widget.isMe ? Colors.blue : Colors.grey.shade300;
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppConstants.typingBubblePaddingHorizontal,
-        vertical: AppConstants.typingBubblePaddingVertical,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: bubbleColor,
         borderRadius: BorderRadius.only(
-          topLeft: const Radius.circular(AppConstants.typingBubbleBorderRadius),
-          topRight: const Radius.circular(
-            AppConstants.typingBubbleBorderRadius,
-          ),
-          bottomLeft: Radius.circular(
-            widget.isMe ? AppConstants.typingBubbleBorderRadius : 0,
-          ),
-          bottomRight: Radius.circular(
-            widget.isMe ? 0 : AppConstants.typingBubbleBorderRadius,
-          ),
+          topLeft: Radius.circular(16.r),
+          topRight: Radius.circular(16.r),
+          bottomLeft: Radius.circular(widget.isMe ? 16.r : 0),
+          bottomRight: Radius.circular(widget.isMe ? 0 : 16.r),
         ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildDot(_anim1),
-          const SizedBox(width: AppConstants.typingBubbleDotSpacing),
+          SizedBox(width: 5.w),
           _buildDot(_anim2),
-          const SizedBox(width: AppConstants.typingBubbleDotSpacing),
+          SizedBox(width: 5.w),
           _buildDot(_anim3),
         ],
       ),
