@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wimo/features/auth/presentation/screens/auth_screen.dart';
-import 'package:wimo/features/home/presentation/screens/home_screen.dart';
 import 'package:wimo/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:wimo/features/splash/presentation/bloc/splash_bloc.dart';
 import 'package:wimo/features/splash/presentation/bloc/splash_event.dart';
