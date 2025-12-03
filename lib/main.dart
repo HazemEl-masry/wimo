@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wimo/features/onboarding/data/repositories/onboarding_repository_impl.dart';
 import 'package:wimo/features/splash/data/repositories/splash_repository_impl.dart';
 import 'package:wimo/features/splash/domain/usecases/check_onboarding_status.dart';
-import 'package:wimo/features/splash/presentation/bloc/splash_bloc.dart';
+import 'package:wimo/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:wimo/features/splash/presentation/screens/splash_screen.dart';
 
 void main() {
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       ensureScreenSize: true,
       builder: (context, child) {
         return BlocProvider(
-          create: (context) => SplashBloc(
+          create: (context) => SplashCubit(
             checkOnboardingStatus: CheckOnboardingStatus(
               SplashRepositoryImpl(
                 onboardingRepository: OnboardingRepositoryImpl(),

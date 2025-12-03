@@ -4,9 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wimo/features/auth/presentation/screens/auth_screen.dart';
 import 'package:wimo/features/onboarding/presentation/screens/onboarding_screen.dart';
-import 'package:wimo/features/splash/presentation/bloc/splash_bloc.dart';
-import 'package:wimo/features/splash/presentation/bloc/splash_event.dart';
-import 'package:wimo/features/splash/presentation/bloc/splash_state.dart';
+import 'package:wimo/features/splash/presentation/cubit/splash_cubit.dart';
+import 'package:wimo/features/splash/presentation/cubit/splash_state.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -42,8 +41,8 @@ class _SplashScreenState extends State<SplashScreen>
     // Start animation
     _animationController.forward();
 
-    // Trigger splash event
-    context.read<SplashBloc>().add(const SplashStarted());
+    // Trigger splash check
+    context.read<SplashCubit>().checkAndNavigate();
   }
 
   @override
@@ -54,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SplashBloc, SplashState>(
+    return BlocListener<SplashCubit, SplashState>(
       listener: (context, state) {
         if (state is SplashNavigateToHome) {
           Navigator.pushReplacement(
@@ -148,7 +147,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 SizedBox(height: 60.h),
                 // Loading Indicator
-                BlocBuilder<SplashBloc, SplashState>(
+                BlocBuilder<SplashCubit, SplashState>(
                   builder: (context, state) {
                     if (state is SplashChecking) {
                       return SizedBox(

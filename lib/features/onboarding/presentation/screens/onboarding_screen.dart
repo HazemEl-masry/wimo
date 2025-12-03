@@ -5,9 +5,8 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:wimo/core/utils/color_utils.dart';
 import 'package:wimo/features/home/presentation/screens/home_screen.dart';
 import 'package:wimo/features/onboarding/data/repositories/onboarding_repository_impl.dart';
-import 'package:wimo/features/onboarding/presentation/bloc/onboarding_bloc.dart';
-import 'package:wimo/features/onboarding/presentation/bloc/onboarding_event.dart';
-import 'package:wimo/features/onboarding/presentation/bloc/onboarding_state.dart';
+import 'package:wimo/features/onboarding/presentation/cubit/onboarding_cubit.dart';
+import 'package:wimo/features/onboarding/presentation/cubit/onboarding_state.dart';
 import 'package:wimo/features/onboarding/presentation/widgets/onboarding_page_widget.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -17,8 +16,8 @@ class OnboardingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          OnboardingBloc(repository: OnboardingRepositoryImpl())
-            ..add(OnboardingStarted()),
+          OnboardingCubit(repository: OnboardingRepositoryImpl())
+            ..loadOnboarding(),
       child: const OnboardingView(),
     );
   }
@@ -48,7 +47,7 @@ class _OnboardingViewState extends State<OnboardingView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<OnboardingBloc, OnboardingState>(
+    return BlocConsumer<OnboardingCubit, OnboardingState>(
       listener: (context, state) {
         if (state.isCompleted) {
           Navigator.pushReplacement(
@@ -85,9 +84,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                     alignment: Alignment.topRight,
                     child: TextButton(
                       onPressed: () {
-                        context.read<OnboardingBloc>().add(
-                          OnboardingSkipPressed(),
-                        );
+                        context.read<OnboardingCubit>().onSkipPressed();
                       },
                       child: Text(
                         'Skip',
@@ -104,9 +101,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                   child: PageView.builder(
                     controller: _pageController,
                     onPageChanged: (index) {
-                      context.read<OnboardingBloc>().add(
-                        OnboardingPageChanged(index),
-                      );
+                      context.read<OnboardingCubit>().onPageChanged(index);
                     },
                     itemCount: state.items.length,
                     itemBuilder: (context, index) {
@@ -140,9 +135,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                         height: 45.h,
                         child: ElevatedButton(
                           onPressed: () {
-                            context.read<OnboardingBloc>().add(
-                              OnboardingNextPressed(),
-                            );
+                            context.read<OnboardingCubit>().onNextPressed();
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: ColorUtils.hexToColor(

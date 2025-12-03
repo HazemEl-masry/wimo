@@ -1,4 +1,4 @@
-/// States for SplashBloc
+/// States for SplashCubit
 abstract class SplashState {
   const SplashState();
 }

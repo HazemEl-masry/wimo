@@ -1,21 +1,16 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wimo/features/splash/domain/usecases/check_onboarding_status.dart';
-import 'package:wimo/features/splash/presentation/bloc/splash_event.dart';
-import 'package:wimo/features/splash/presentation/bloc/splash_state.dart';
+import 'package:wimo/features/splash/presentation/cubit/splash_state.dart';
 
-/// BLoC for managing splash screen logic
-class SplashBloc extends Bloc<SplashEvent, SplashState> {
+/// Cubit for managing splash screen logic
+class SplashCubit extends Cubit<SplashState> {
   final CheckOnboardingStatus checkOnboardingStatus;
 
-  SplashBloc({required this.checkOnboardingStatus})
-    : super(const SplashInitial()) {
-    on<SplashStarted>(_onStarted);
-  }
+  SplashCubit({required this.checkOnboardingStatus})
+    : super(const SplashInitial());
 
-  Future<void> _onStarted(
-    SplashStarted event,
-    Emitter<SplashState> emit,
-  ) async {
+  /// Check onboarding status and navigate to appropriate screen
+  Future<void> checkAndNavigate() async {
     emit(const SplashChecking());
 
     // Small delay for splash screen effect
