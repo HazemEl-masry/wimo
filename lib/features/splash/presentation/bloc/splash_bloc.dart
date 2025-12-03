@@ -19,7 +19,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
     emit(const SplashChecking());
 
     // Small delay for splash screen effect
-    await Future.delayed(const Duration(milliseconds: 1500));
+    await Future.delayed(const Duration(milliseconds: 2200));
 
     // Check onboarding status
     final hasCompleted = await checkOnboardingStatus();
