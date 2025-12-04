@@ -32,6 +32,16 @@ class NumberVerifyWidget extends StatelessWidget {
                 prefixIcon: const Icon(Icons.phone),
               ),
               keyboardType: TextInputType.phone,
+              onSubmitted: (value) {},
+            ),
+            SizedBox(height: 24.h),
+            SizedBox(
+              width: 200.w,
+              height: 40.h,
+              child: ElevatedButton(
+                onPressed: () {},
+                child: Text("Next", style: TextStyle(fontSize: 16.sp)),
+              ),
             ),
           ],
         ),
