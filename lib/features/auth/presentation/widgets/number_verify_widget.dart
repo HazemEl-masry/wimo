@@ -13,46 +13,27 @@ class NumberVerifyWidget extends StatelessWidget {
           left: 16.w,
           right: 16.w,
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Stack(
-                children: [
-                  Container(
-                    height: 250.h,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  Positioned(
-                    left: 10,
-                    child: CircleAvatar(
-                      radius: 35.r,
-                      backgroundColor: const Color(0xFFA4D6FF),
-                    ),
-                  ),
-                  Positioned(
-                    left: 75.r,
-                    top: 50.r,
-                    child: CircleAvatar(
-                      radius: 25.r,
-                      backgroundColor: const Color(0xFFA4D6FF),
-                    ),
-                  ),
-                ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Phone Number",
+              style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
+            ),
+            Text("Verify your phone number", style: TextStyle(fontSize: 16.sp)),
+            SizedBox(height: 24.h),
+            TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                hintText: "+1 xxx xxx xxx",
+                hintStyle: TextStyle(fontSize: 16.sp),
+                prefixIcon: const Icon(Icons.phone),
               ),
-              Text(
-                "Phone Number",
-                style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                "Enter your phone number to verify",
-                style: TextStyle(fontSize: 16.sp),
-              ),
-            ],
-          ),
+              keyboardType: TextInputType.phone,
+            ),
+          ],
         ),
       ),
     );

@@ -14,7 +14,7 @@ class SplashCubit extends Cubit<SplashState> {
     emit(const SplashChecking());
 
     // Small delay for splash screen effect
-    await Future.delayed(const Duration(milliseconds: 2200));
+    await Future.delayed(const Duration(milliseconds: 3800));
 
     // Check onboarding status
     final hasCompleted = await checkOnboardingStatus();
