@@ -1,12 +1,12 @@
-class AuthEntitiePhone {
+class AuthEntityPhone {
   final String phone;
 
-  AuthEntitiePhone({required this.phone});
+  AuthEntityPhone({required this.phone});
 }
 
-class AuthEntitieOtp {
+class AuthEntityOtp {
   final String phone;
   final String otp;
 
-  AuthEntitieOtp({required this.phone, required this.otp});
+  AuthEntityOtp({required this.phone, required this.otp});
 }
