@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:wimo/core/routing/app_router.dart';
 import 'package:wimo/core/utils/color_utils.dart';
-import 'package:wimo/features/home/presentation/screens/home_screen.dart';
-import 'package:wimo/features/onboarding/data/repositories/onboarding_repository_impl.dart';
 import 'package:wimo/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:wimo/features/onboarding/presentation/cubit/onboarding_state.dart';
 import 'package:wimo/features/onboarding/presentation/widgets/onboarding_page_widget.dart';
@@ -14,12 +14,7 @@ class OnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          OnboardingCubit(repository: OnboardingRepositoryImpl())
-            ..loadOnboarding(),
-      child: const OnboardingView(),
-    );
+    return const OnboardingView();
   }
 }
 
@@ -50,10 +45,7 @@ class _OnboardingViewState extends State<OnboardingView> {
     return BlocConsumer<OnboardingCubit, OnboardingState>(
       listener: (context, state) {
         if (state.isCompleted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
-          );
+          context.go(AppRouter.auth);
         }
         // Check if PageController is attached and has clients before accessing page
         if (_pageController.hasClients) {

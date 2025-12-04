@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rive/rive.dart' as rive;
-import 'package:wimo/features/auth/presentation/screens/auth_screen.dart';
-import 'package:wimo/features/onboarding/presentation/screens/onboarding_screen.dart';
+import 'package:wimo/core/routing/app_router.dart';
 import 'package:wimo/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:wimo/features/splash/presentation/cubit/splash_state.dart';
 
@@ -58,15 +58,9 @@ class _SplashScreenState extends State<SplashScreen>
     return BlocListener<SplashCubit, SplashState>(
       listener: (context, state) {
         if (state is SplashNavigateToHome) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const AuthScreen()),
-          );
+          context.go(AppRouter.auth);
         } else if (state is SplashNavigateToOnboarding) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const OnboardingScreen()),
-          );
+          context.go(AppRouter.onboarding);
         }
       },
       child: Scaffold(

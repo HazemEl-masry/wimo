@@ -67,7 +67,7 @@ class _NumberVerifyWidgetState extends State<NumberVerifyWidget> {
               right: 16.w,
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              // crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   "Phone Number",
@@ -104,6 +104,11 @@ class _NumberVerifyWidgetState extends State<NumberVerifyWidget> {
                   width: 200.w,
                   height: 40.h,
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                    ),
                     onPressed: state is AuthPhoneLoading
                         ? null
                         : () {
