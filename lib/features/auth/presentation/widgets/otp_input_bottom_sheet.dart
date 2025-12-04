@@ -22,7 +22,7 @@ class _OtpInputBottomSheetState extends State<OtpInputBottomSheet> {
   void initState() {
     super.initState();
     // Auto-focus on text field when sheet opens
-    Future.delayed(const Duration(milliseconds: 300), () {
+    Future.delayed(const Duration(seconds: 5), () {
       if (mounted) {
         _focusNode.requestFocus();
       }

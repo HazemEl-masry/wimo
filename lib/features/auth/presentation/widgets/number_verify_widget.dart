@@ -35,7 +35,7 @@ class _NumberVerifyWidgetState extends State<NumberVerifyWidget> {
           );
 
           // Wait for 2 seconds before opening bottom sheet
-          Future.delayed(const Duration(seconds: 2), () {
+          Future.delayed(const Duration(seconds: 3), () {
             if (context.mounted) {
               // Show OTP input bottom sheet
               final verifyOtpCubit = context.read<VerifyOtpCubit>();
