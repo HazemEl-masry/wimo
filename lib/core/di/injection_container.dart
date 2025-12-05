@@ -157,8 +157,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => AppDatabase());
 
   // Services
-  sl.registerLazySingleton(() => ApiServices(dio: sl()));
   sl.registerLazySingleton(() => TokenService());
+  sl.registerLazySingleton(() => ApiServices(dio: sl(), tokenService: sl()));
 
   // External
   sl.registerLazySingleton(() => Dio());

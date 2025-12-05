@@ -1,15 +1,41 @@
 import 'package:dio/dio.dart';
+import 'package:wimo/core/services/token_service.dart';
 
 class ApiServices {
   final Dio dio;
+  final TokenService? tokenService;
   final String baseUrl = "http://192.168.1.5:3000/";
 
-  ApiServices({required this.dio}) {
+  ApiServices({required this.dio, this.tokenService}) {
     // Configure dio with default options
     dio.options.baseUrl = baseUrl;
     dio.options.connectTimeout = const Duration(seconds: 30);
     dio.options.receiveTimeout = const Duration(seconds: 30);
     dio.options.headers['Content-Type'] = 'application/json';
+
+    // Add interceptor to automatically inject token
+    if (tokenService != null) {
+      dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (options, handler) async {
+            // Automatically inject token before each request
+            final token = await tokenService!.getAccessToken();
+            if (token != null && token.isNotEmpty) {
+              options.headers['Authorization'] = 'Bearer $token';
+            }
+            handler.next(options);
+          },
+          onError: (error, handler) async {
+            // If we get 401, try to handle it gracefully
+            if (error.response?.statusCode == 401) {
+              // Token might be expired - could implement refresh logic here
+              // For now, just pass the error through
+            }
+            handler.next(error);
+          },
+        ),
+      );
+    }
   }
 
   /// Set authentication token for all requests
@@ -20,6 +46,20 @@ class ApiServices {
   /// Clear authentication token
   void clearAuthToken() {
     dio.options.headers.remove('Authorization');
+  }
+
+  /// Check if authentication token is set
+  bool hasAuthToken() {
+    return dio.options.headers.containsKey('Authorization');
+  }
+
+  /// Get current auth token from headers (for debugging)
+  String? getCurrentAuthToken() {
+    final authHeader = dio.options.headers['Authorization'];
+    if (authHeader is String && authHeader.startsWith('Bearer ')) {
+      return authHeader.substring(7);
+    }
+    return null;
   }
 
   /// POST request
@@ -153,7 +193,9 @@ class ApiServices {
           case 400:
             return Exception('Bad request: $message');
           case 401:
-            return Exception('Unauthorized: $message');
+            return Exception(
+              'Unauthorized: Invalid or expired token. Please log in again.',
+            );
           case 403:
             return Exception('Forbidden: $message');
           case 404:

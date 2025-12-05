@@ -8,7 +8,7 @@ class GetChatsUseCase {
 
   GetChatsUseCase({required this.repository});
 
-  Future<Either<Failure, List<ChatEntity>>> call() async {
-    return await repository.getChats();
+  Stream<Either<Failure, List<ChatEntity>>> call() {
+    return repository.getChats();
   }
 }

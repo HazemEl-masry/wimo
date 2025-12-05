@@ -16,24 +16,41 @@ class ChatRepositoryImpl implements ChatRepository {
   });
 
   @override
-  Future<Either<Failure, List<ChatEntity>>> getChats() async {
+  Stream<Either<Failure, List<ChatEntity>>> getChats() async* {
+    // Emit initial loading state by checking cache first
     try {
-      final chats = await remoteDataSource.getChats();
-      // Cache chats
-      await localDataSource.cacheChats(chats);
-
-      return Right(_mapModelsToEntities(chats));
-    } catch (e) {
-      // Try local
-      try {
-        final localChats = await localDataSource.getCachedChats();
-        if (localChats.isNotEmpty) {
-          return Right(_mapModelsToEntities(localChats));
-        }
-      } catch (_) {
-        // Ignore local error and return original error
+      final cachedChats = await localDataSource.getCachedChats();
+      if (cachedChats.isNotEmpty) {
+        yield Right(_mapModelsToEntities(cachedChats));
       }
-      return Left(ServerFailure(errorMessage: e.toString()));
+    } catch (_) {
+      // Ignore cache errors
+    }
+
+    // Poll for updates every 5 seconds
+    while (true) {
+      try {
+        final chats = await remoteDataSource.getChats();
+        // Cache chats
+        await localDataSource.cacheChats(chats);
+
+        yield Right(_mapModelsToEntities(chats));
+      } catch (e) {
+        // Try local on error
+        try {
+          final localChats = await localDataSource.getCachedChats();
+          if (localChats.isNotEmpty) {
+            yield Right(_mapModelsToEntities(localChats));
+          } else {
+            yield Left(ServerFailure(errorMessage: e.toString()));
+          }
+        } catch (_) {
+          yield Left(ServerFailure(errorMessage: e.toString()));
+        }
+      }
+
+      // Wait 5 seconds before next poll
+      await Future.delayed(const Duration(seconds: 5));
     }
   }
 

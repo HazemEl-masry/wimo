@@ -18,8 +18,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Load chats when screen is first opened
-    context.read<ChatListCubit>().loadChats();
+    // Start listening to chat stream when screen is first opened
+    context.read<ChatListCubit>().startListening();
+  }
+
+  @override
+  void dispose() {
+    // Stop listening when screen is disposed
+    context.read<ChatListCubit>().stopListening();
+    super.dispose();
   }
 
   @override
@@ -84,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(height: 24.h),
                   ElevatedButton.icon(
                     onPressed: () {
-                      context.read<ChatListCubit>().loadChats();
+                      context.read<ChatListCubit>().forceRefresh();
                     },
                     icon: const Icon(Icons.refresh),
                     label: const Text('Retry'),
@@ -129,7 +136,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
             return RefreshIndicator(
               onRefresh: () async {
-                await context.read<ChatListCubit>().refreshChats();
+                context.read<ChatListCubit>().forceRefresh();
+                // Give it a moment to reload
+                await Future.delayed(const Duration(milliseconds: 500));
               },
               child: ListView.separated(
                 itemCount: state.chats.length,
