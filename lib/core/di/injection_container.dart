@@ -23,7 +23,7 @@ import 'package:wimo/features/chat/data/datasource/message_remote_data_source.da
 import 'package:wimo/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:wimo/features/chat/domain/repositories/chat_repository.dart';
 import 'package:wimo/features/chat/domain/usecases/get_chats_usecase.dart';
-import 'package:wimo/features/chat/presentation/cubit/chat_list_cubit.dart';
+import 'package:wimo/features/home/presentation/cubit/chat_list_cubit.dart';
 
 final sl = GetIt.instance;
 

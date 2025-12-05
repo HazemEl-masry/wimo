@@ -4,8 +4,7 @@ import 'package:wimo/core/di/injection_container.dart';
 import 'package:wimo/features/auth/presentation/cubit/auth_phone_cubit/auth_phone_cubit.dart';
 import 'package:wimo/features/auth/presentation/cubit/verify_otp_cubit/verify_otp_cubit.dart';
 import 'package:wimo/features/auth/presentation/screens/auth_screen.dart';
-import 'package:wimo/features/chat/presentation/cubit/chat_list_cubit.dart';
-import 'package:wimo/features/chat/presentation/screens/chat_list_screen.dart';
+import 'package:wimo/features/home/presentation/cubit/chat_list_cubit.dart';
 import 'package:wimo/features/home/presentation/screens/home_screen.dart';
 import 'package:wimo/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:wimo/features/onboarding/presentation/screens/onboarding_screen.dart';
@@ -17,7 +16,6 @@ class AppRouter {
   static const String onboarding = '/onboarding';
   static const String auth = '/auth';
   static const String home = '/home';
-  static const String chats = '/chats';
 
   static GoRouter router = GoRouter(
     initialLocation: splash,
@@ -54,14 +52,9 @@ class AppRouter {
       GoRoute(
         path: home,
         name: 'home',
-        builder: (context, state) => const HomeScreen(),
-      ),
-      GoRoute(
-        path: chats,
-        name: 'chats',
         builder: (context, state) => BlocProvider(
           create: (context) => sl<ChatListCubit>(),
-          child: const ChatListScreen(),
+          child: const HomeScreen(),
         ),
       ),
     ],
