@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:wimo/features/auth/presentation/cubit/verify_otp_cubit/verify_otp_cubit.dart';
 import 'package:wimo/features/auth/presentation/widgets/overlay_message.dart';
 
@@ -79,7 +80,8 @@ class _OtpInputBottomSheetState extends State<OtpInputBottomSheet> {
               // Close bottom sheet
               Navigator.of(context).pop();
 
-              // TODO: Navigate to home or save auth token
+              // Navigate to home screen
+              context.go('/home');
             }
           });
         } else if (state is VerifyOtpError) {

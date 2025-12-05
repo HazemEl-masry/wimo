@@ -1,9 +1,11 @@
 import 'package:wimo/core/services/api_services.dart';
-import 'package:wimo/features/auth/data/models/auth_model.dart';
+import 'package:wimo/features/auth/data/models/auth_response_model.dart';
 
 abstract class AuthRemoteDataSource {
-  Future<AuthModelPhone> sendOtp({required String phone});
-  Future<AuthModelOtp> verifyOtp({required String phone, required String otp});
+  Future<SendOtpResponse> sendOtp({required String phone});
+  Future<AuthResponse> verifyOtp({required String phone, required String otp});
+  Future<AuthResponse> refreshToken({required String refreshToken});
+  Future<void> logout({required String refreshToken});
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -12,7 +14,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   AuthRemoteDataSourceImpl({required this.apiServices});
 
   @override
-  Future<AuthModelPhone> sendOtp({required String phone}) async {
+  Future<SendOtpResponse> sendOtp({required String phone}) async {
     try {
       final response = await apiServices.postRequest(
         endPoint: 'auth/send-otp',
@@ -20,15 +22,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Handle different response structures
-        if (response.data is Map<String, dynamic>) {
-          // If response has data, use it; otherwise create model with sent phone
-          final phoneFromResponse = response.data['phone'] ?? phone;
-          return AuthModelPhone(phoneNumber: phoneFromResponse);
-        } else {
-          // If response is not a map, just return the phone we sent
-          return AuthModelPhone(phoneNumber: phone);
-        }
+        return SendOtpResponse.fromJson(response.data);
       } else {
         throw Exception('Failed to send OTP: ${response.statusMessage}');
       }
@@ -38,7 +32,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<AuthModelOtp> verifyOtp({
+  Future<AuthResponse> verifyOtp({
     required String phone,
     required String otp,
   }) async {
@@ -49,23 +43,46 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Handle different response structures
-        if (response.data is Map<String, dynamic>) {
-          final phoneFromResponse = response.data['phone'] ?? phone;
-          final otpFromResponse = response.data['otp'] ?? otp;
-          return AuthModelOtp(
-            phoneNumber: phoneFromResponse,
-            otpVerification: otpFromResponse,
-          );
-        } else {
-          // If response is not a map, use the data we sent
-          return AuthModelOtp(phoneNumber: phone, otpVerification: otp);
-        }
+        return AuthResponse.fromJson(response.data);
       } else {
         throw Exception('Failed to verify OTP: ${response.statusMessage}');
       }
     } catch (e) {
       throw Exception('Failed to verify OTP: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<AuthResponse> refreshToken({required String refreshToken}) async {
+    try {
+      final response = await apiServices.postRequest(
+        endPoint: 'auth/refresh-token',
+        data: {'refreshToken': refreshToken},
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return AuthResponse.fromJson(response.data);
+      } else {
+        throw Exception('Failed to refresh token: ${response.statusMessage}');
+      }
+    } catch (e) {
+      throw Exception('Failed to refresh token: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<void> logout({required String refreshToken}) async {
+    try {
+      final response = await apiServices.postRequest(
+        endPoint: 'auth/logout',
+        data: {'refreshToken': refreshToken},
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('Failed to logout: ${response.statusMessage}');
+      }
+    } catch (e) {
+      throw Exception('Failed to logout: ${e.toString()}');
     }
   }
 }

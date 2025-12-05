@@ -12,13 +12,18 @@ class VerifyOtpInitial extends VerifyOtpState {}
 class VerifyOtpLoading extends VerifyOtpState {}
 
 class VerifyOtpSuccess extends VerifyOtpState {
+  final String userId;
   final String phone;
-  final String otp;
+  final String accessToken;
 
-  const VerifyOtpSuccess({required this.phone, required this.otp});
+  const VerifyOtpSuccess({
+    required this.userId,
+    required this.phone,
+    required this.accessToken,
+  });
 
   @override
-  List<Object> get props => [phone, otp];
+  List<Object> get props => [userId, phone, accessToken];
 }
 
 class VerifyOtpError extends VerifyOtpState {

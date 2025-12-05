@@ -1,4 +1,4 @@
-import 'package:dartz/dartz.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:wimo/core/errors/failure.dart';
 import 'package:wimo/features/auth/domain/entities/auth_entitie.dart';
 import 'package:wimo/features/auth/domain/repos/auth_repo.dart';

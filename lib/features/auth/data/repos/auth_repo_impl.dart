@@ -1,4 +1,4 @@
-import 'package:dartz/dartz.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:wimo/core/errors/failure.dart';
 import 'package:wimo/features/auth/data/datasource/auth_remote_data_source.dart';
 import 'package:wimo/features/auth/domain/entities/auth_entitie.dart';
@@ -15,21 +15,27 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     try {
       final result = await remoteDataSource.sendOtp(phone: phone);
-      return Right(AuthEntityPhone(phone: result.phoneNumber));
+      return Right(AuthEntityPhone(phone: result.phone));
     } catch (e) {
       return Left(ServerFailure(errorMessage: e.toString()));
     }
   }
 
   @override
-  Future<Either<Failure, AuthEntityOtp>> verifyOtp({
+  Future<Either<Failure, AuthEntityResponse>> verifyOtp({
     required String otp,
     required String phone,
   }) async {
     try {
       final result = await remoteDataSource.verifyOtp(otp: otp, phone: phone);
+      // Return entity with full auth data from backend response
       return Right(
-        AuthEntityOtp(phone: result.phoneNumber, otp: result.otpVerification),
+        AuthEntityResponse(
+          userId: result.user.id,
+          phone: result.user.phone,
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken,
+        ),
       );
     } catch (e) {
       return Left(ServerFailure(errorMessage: e.toString()));

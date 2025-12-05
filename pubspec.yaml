@@ -31,14 +31,16 @@ dependencies:
   bloc: ^9.1.0
   cached_network_image: ^3.4.1
   cupertino_icons: ^1.0.8
-  dartz: ^0.10.1
   dio: ^5.9.0
   equatable: ^2.0.5
+  fpdart: ^1.2.0
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
   flutter_screenutil: ^5.9.3
+  flutter_secure_storage: ^9.2.2
   flutter_svg: ^2.2.3
+  get_it: ^8.0.2
   go_router: ^17.0.0
   google_fonts: ^6.3.2
   image_picker: ^1.2.1
