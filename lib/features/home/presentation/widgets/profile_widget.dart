@@ -14,45 +14,44 @@ class ProfileWidget extends StatelessWidget {
         if (state is ProfileLoaded) {
           final hasAvatar =
               state.user.avatar != null && state.user.avatar!.isNotEmpty;
-          final initial = state.user.name?.isNotEmpty == true
-              ? state.user.name![0].toUpperCase()
-              : state.user.phone.isNotEmpty
-              ? state.user.phone[0]
-              : '?';
-
           return GestureDetector(
             onTap: () {
               // TODO: Navigate to profile screen
             },
             child: CircleAvatar(
               radius: 24.r,
-              backgroundImage: hasAvatar
-                  ? CachedNetworkImageProvider(state.user.avatar!)
-                  : null,
-              child: !hasAvatar
-                  ? Text(
-                      initial,
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold,
+              child: hasAvatar
+                  ? CachedNetworkImage(
+                      imageUrl: state.user.avatar!,
+                      imageBuilder: (context, imageProvider) => Container(
+                        width: 24.w,
+                        height: 24.h,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      placeholder: (context, url) => Icon(
+                        Icons.person,
+                        size: MediaQuery.of(context).size.width * 0.07,
+                      ),
+                      errorWidget: (context, url, error) => Icon(
+                        Icons.person,
+                        size: MediaQuery.of(context).size.width * 0.07,
                       ),
                     )
-                  : null,
+                  : Icon(
+                      Icons.person,
+                      size: MediaQuery.of(context).size.width * 0.07,
+                    ),
             ),
           );
         }
 
-        // Loading or error state - show default avatar
-        return GestureDetector(
-          onTap: () {},
-          child: CircleAvatar(
-            radius: 24.r,
-            child: Icon(
-              Icons.person,
-              size: MediaQuery.of(context).size.width * 0.07,
-            ),
-          ),
-        );
+        return const SizedBox.shrink();
       },
     );
   }

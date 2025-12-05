@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:wimo/core/services/token_service.dart';
 
 /// Global application state
 class AppState extends Equatable {
@@ -40,7 +41,9 @@ class AppState extends Equatable {
 /// Tracks authentication status, online/offline state, and current user.
 /// Used for navigation guards and global UI state.
 class AppStateCubit extends Cubit<AppState> {
-  AppStateCubit() : super(AppState.initial());
+  final TokenService tokenService;
+
+  AppStateCubit({required this.tokenService}) : super(AppState.initial());
 
   /// Update authentication status
   void setAuthenticated(bool value, {String? userId}) {
@@ -52,8 +55,11 @@ class AppStateCubit extends Cubit<AppState> {
     emit(state.copyWith(isOnline: value));
   }
 
-  /// Logout user (clear auth state)
-  void logout() {
+  /// Logout user (clear auth state and tokens)
+  Future<void> logout() async {
+    // Clear all tokens from secure storage
+    await tokenService.clearTokens();
+    // Update state to unauthenticated
     emit(state.copyWith(isAuthenticated: false, currentUserId: null));
   }
 

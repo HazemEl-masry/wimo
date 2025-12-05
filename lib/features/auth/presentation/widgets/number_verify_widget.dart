@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wimo/features/auth/presentation/cubit/auth_phone_cubit/auth_phone_cubit.dart';
 import 'package:wimo/features/auth/presentation/cubit/verify_otp_cubit/verify_otp_cubit.dart';
 import 'package:wimo/features/auth/presentation/widgets/overlay_message.dart';
+import 'package:wimo/features/app/presentation/cubit/app_state_cubit.dart';
 import 'package:wimo/features/auth/presentation/widgets/otp_input_bottom_sheet.dart';
 
 class NumberVerifyWidget extends StatefulWidget {
@@ -39,12 +40,16 @@ class _NumberVerifyWidgetState extends State<NumberVerifyWidget> {
             if (context.mounted) {
               // Show OTP input bottom sheet
               final verifyOtpCubit = context.read<VerifyOtpCubit>();
+              final appStateCubit = context.read<AppStateCubit>();
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
                 backgroundColor: Colors.transparent,
-                builder: (context) => BlocProvider.value(
-                  value: verifyOtpCubit,
+                builder: (context) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider.value(value: verifyOtpCubit),
+                    BlocProvider.value(value: appStateCubit),
+                  ],
                   child: OtpInputBottomSheet(phoneNumber: state.phone),
                 ),
               );

@@ -68,12 +68,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
-          IconButton(
-            onPressed: () {
-              GoRouter.of(context).push('/settings');
-            },
-            icon: const Icon(Icons.settings),
-          ),
           IconButton(onPressed: () {}, icon: const Icon(Icons.dark_mode)),
           const ProfileWidget(),
         ],

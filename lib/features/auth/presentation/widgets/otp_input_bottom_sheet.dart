@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wimo/features/auth/presentation/cubit/verify_otp_cubit/verify_otp_cubit.dart';
 import 'package:wimo/features/auth/presentation/widgets/overlay_message.dart';
+import 'package:wimo/features/app/presentation/cubit/app_state_cubit.dart';
 
 class OtpInputBottomSheet extends StatefulWidget {
   final String phoneNumber;
@@ -72,6 +73,12 @@ class _OtpInputBottomSheetState extends State<OtpInputBottomSheet> {
             context: context,
             message: 'OTP verified successfully!',
             isError: false,
+          );
+
+          // Update global app state
+          context.read<AppStateCubit>().setAuthenticated(
+            true,
+            userId: state.userId,
           );
 
           // Wait for 2 seconds before closing

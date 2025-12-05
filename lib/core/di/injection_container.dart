@@ -45,7 +45,12 @@ Future<void> init() async {
   // ==================== Splash ====================
   // Cubit
   sl.registerFactory(
-    () => SplashCubit(checkOnboardingStatus: sl(), checkAuthStatus: sl()),
+    () => SplashCubit(
+      checkOnboardingStatus: sl(),
+      checkAuthStatus: sl(),
+      appStateCubit: sl(),
+      tokenService: sl(),
+    ),
   );
 
   // Use cases
@@ -164,7 +169,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => AppDatabase());
 
   // Global App State
-  sl.registerLazySingleton(() => AppStateCubit());
+  sl.registerLazySingleton(() => AppStateCubit(tokenService: sl()));
   sl.registerLazySingleton(() => ConnectionCubit());
 
   // Services

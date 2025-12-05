@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wimo/core/di/injection_container.dart';
@@ -24,8 +25,24 @@ class AppRouter {
   static const String contacts = '/contacts';
   static const String settings = '/settings';
 
+  static final _appStateCubit = sl<AppStateCubit>();
+
   static GoRouter router = GoRouter(
     initialLocation: splash,
+    refreshListenable: _AppStateNotifier(_appStateCubit),
+    redirect: (context, state) {
+      final isAuthenticated = _appStateCubit.state.isAuthenticated;
+      final isOnSplash = state.matchedLocation == splash;
+      final isOnAuth = state.matchedLocation == auth;
+      final isOnOnboarding = state.matchedLocation == onboarding;
+
+      // If not authenticated and trying to access protected route
+      if (!isAuthenticated && !isOnSplash && !isOnAuth && !isOnOnboarding) {
+        return auth;
+      }
+
+      return null; // No redirect needed
+    },
     routes: [
       // Wrap entire app with global providers
       ShellRoute(
@@ -93,4 +110,15 @@ class AppRouter {
       ),
     ],
   );
+}
+
+/// Converts AppStateCubit stream to ChangeNotifier for GoRouter
+class _AppStateNotifier extends ChangeNotifier {
+  final AppStateCubit _appStateCubit;
+
+  _AppStateNotifier(this._appStateCubit) {
+    _appStateCubit.stream.listen((_) {
+      notifyListeners();
+    });
+  }
 }
