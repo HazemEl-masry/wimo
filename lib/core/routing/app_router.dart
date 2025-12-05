@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wimo/core/di/injection_container.dart';
+import 'package:wimo/features/app/presentation/cubit/app_state_cubit.dart';
+import 'package:wimo/features/app/presentation/cubit/connection_cubit.dart';
 import 'package:wimo/features/auth/presentation/cubit/auth_phone_cubit/auth_phone_cubit.dart';
 import 'package:wimo/features/auth/presentation/cubit/verify_otp_cubit/verify_otp_cubit.dart';
 import 'package:wimo/features/auth/presentation/screens/auth_screen.dart';
@@ -25,57 +27,69 @@ class AppRouter {
   static GoRouter router = GoRouter(
     initialLocation: splash,
     routes: [
-      GoRoute(
-        path: splash,
-        name: 'splash',
-        builder: (context, state) => BlocProvider(
-          create: (context) => sl<SplashCubit>(),
-          child: const SplashScreen(),
-        ),
-      ),
-      GoRoute(
-        path: onboarding,
-        name: 'onboarding',
-        builder: (context, state) => BlocProvider(
-          create: (context) => sl<OnboardingCubit>(),
-          child: const OnboardingScreen(),
-        ),
-      ),
-      GoRoute(
-        path: auth,
-        name: 'auth',
-        builder: (context, state) {
+      // Wrap entire app with global providers
+      ShellRoute(
+        builder: (context, state, child) {
           return MultiBlocProvider(
             providers: [
-              BlocProvider(create: (context) => sl<AuthPhoneCubit>()),
-              BlocProvider(create: (context) => sl<VerifyOtpCubit>()),
+              BlocProvider(create: (_) => sl<AppStateCubit>()),
+              BlocProvider(create: (_) => sl<ConnectionCubit>()),
             ],
-            child: const AuthScreen(),
+            child: child,
           );
         },
-      ),
-      GoRoute(
-        path: home,
-        name: 'home',
-        builder: (context, state) => MultiBlocProvider(
-          providers: [
-            BlocProvider(create: (context) => sl<ChatListCubit>()),
-            BlocProvider(
-              create: (context) => sl<ProfileCubit>()..loadProfile(),
+        routes: [
+          GoRoute(
+            path: splash,
+            name: 'splash',
+            builder: (context, state) => BlocProvider(
+              create: (context) => sl<SplashCubit>(),
+              child: const SplashScreen(),
             ),
-          ],
-          child: const HomeScreen(),
-        ),
-      ),
-      GoRoute(
-        path: contacts,
-        name: 'contacts',
-        builder: (context, state) => const ContactsScreen(),
-      ),
-      GoRoute(
-        path: settings,
-        name: 'settings',
-        builder: (context, state) => const SettingsScreen(),
+          ),
+          GoRoute(
+            path: onboarding,
+            name: 'onboarding',
+            builder: (context, state) => BlocProvider(
+              create: (context) => sl<OnboardingCubit>(),
+              child: const OnboardingScreen(),
+            ),
+          ),
+          GoRoute(
+            path: auth,
+            name: 'auth',
+            builder: (context, state) {
+              return MultiBlocProvider(
+                providers: [
+                  BlocProvider(create: (context) => sl<AuthPhoneCubit>()),
+                  BlocProvider(create: (context) => sl<VerifyOtpCubit>()),
+                ],
+                child: const AuthScreen(),
+              );
+            },
+          ),
+          GoRoute(
+            path: home,
+            name: 'home',
+            builder: (context, state) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (context) => sl<ChatListCubit>()),
+                BlocProvider(create: (context) => sl<ProfileCubit>()),
+              ],
+              child: const HomeScreen(),
+            ),
+          ),
+          GoRoute(
+            path: contacts,
+            name: 'contacts',
+            builder: (context, state) => const ContactsScreen(),
+          ),
+          GoRoute(
+            path: settings,
+            name: 'settings',
+            builder: (context, state) => const SettingsScreen(),
+          ),
+        ],
       ),
     ],
   );

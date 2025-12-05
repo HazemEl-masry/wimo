@@ -17,22 +17,25 @@ class SplashCubit extends Cubit<SplashState> {
   Future<void> checkAndNavigate() async {
     emit(const SplashChecking());
 
-    // Small delay for splash screen effect
-    await Future.delayed(const Duration(milliseconds: 3800));
+    // Reduced delay for better UX (1.5s for animation)
+    await Future.delayed(const Duration(milliseconds: 1500));
 
-    // Check onboarding status
-    final hasCompletedOnboarding = await checkOnboardingStatus();
+    // Run checks in parallel for faster navigation
+    final results = await Future.wait([
+      checkOnboardingStatus(),
+      checkAuthStatus(),
+    ]);
 
-    if (hasCompletedOnboarding) {
-      // Check authentication status
-      final isAuthenticated = await checkAuthStatus();
-      if (isAuthenticated) {
-        emit(const SplashNavigateToHome());
-      } else {
-        emit(const SplashNavigateToAuth());
-      }
-    } else {
+    final hasCompletedOnboarding = results[0];
+    final isAuthenticated = results[1];
+
+    // Navigate based on status
+    if (!hasCompletedOnboarding) {
       emit(const SplashNavigateToOnboarding());
+    } else if (isAuthenticated) {
+      emit(const SplashNavigateToHome());
+    } else {
+      emit(const SplashNavigateToAuth());
     }
   }
 }

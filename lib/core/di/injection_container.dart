@@ -33,6 +33,8 @@ import 'package:wimo/features/user/data/repositories/user_repository_impl.dart';
 import 'package:wimo/features/user/domain/repositories/user_repository.dart';
 import 'package:wimo/features/user/domain/usecases/get_current_user_usecase.dart';
 import 'package:wimo/features/user/presentation/cubit/profile_cubit.dart';
+import 'package:wimo/features/app/presentation/cubit/app_state_cubit.dart';
+import 'package:wimo/features/app/presentation/cubit/connection_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -156,9 +158,22 @@ Future<void> init() async {
   // Database
   sl.registerLazySingleton(() => AppDatabase());
 
+  // Global App State
+  sl.registerLazySingleton(() => AppStateCubit());
+  sl.registerLazySingleton(() => ConnectionCubit());
+
   // Services
   sl.registerLazySingleton(() => TokenService());
-  sl.registerLazySingleton(() => ApiServices(dio: sl(), tokenService: sl()));
+  sl.registerLazySingleton(
+    () => ApiServices(
+      dio: sl(),
+      tokenService: sl(),
+      onTokenRefreshFailed: () {
+        // When token refresh fails, logout user
+        sl<AppStateCubit>().logout();
+      },
+    ),
+  );
 
   // External
   sl.registerLazySingleton(() => Dio());

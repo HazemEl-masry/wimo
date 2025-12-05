@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:wimo/features/home/presentation/cubit/chat_list_cubit.dart';
 import 'package:wimo/features/home/presentation/widgets/chat_tile.dart';
 import 'package:wimo/features/home/presentation/widgets/profile_widget.dart';
+import 'package:wimo/features/user/presentation/cubit/profile_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,8 +19,29 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Start listening to chat stream when screen is first opened
-    context.read<ChatListCubit>().startListening();
+    _initializeHome();
+  }
+
+  /// Initialize home screen with parallel data loading
+  Future<void> _initializeHome() async {
+    // Load all resources in parallel for better UX
+    await Future.wait([
+      // 1. Start chat stream (shows cached data immediately)
+      Future(() {
+        if (mounted) context.read<ChatListCubit>().startListening();
+      }),
+
+      // 2. Load user profile
+      Future(() {
+        if (mounted) context.read<ProfileCubit>().loadProfile();
+      }),
+
+      // 3. Future: Sync contacts
+      // Future(() => context.read<ContactsCubit>().syncContacts()),
+
+      // 4. Future: Check unread messages
+      // Future(() => context.read<UnreadCubit>().fetchUnreadCount()),
+    ]);
   }
 
   @override

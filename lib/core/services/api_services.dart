@@ -1,38 +1,57 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:wimo/core/services/token_service.dart';
+import 'package:wimo/core/interceptors/refresh_token_interceptor.dart';
 
 class ApiServices {
   final Dio dio;
-  final TokenService? tokenService;
+  final TokenService tokenService;
+  final void Function()? onTokenRefreshFailed;
   final String baseUrl = "http://192.168.1.5:3000/";
 
-  ApiServices({required this.dio, this.tokenService}) {
+  ApiServices({
+    required this.dio,
+    required this.tokenService,
+    this.onTokenRefreshFailed,
+  }) {
     // Configure dio with default options
     dio.options.baseUrl = baseUrl;
     dio.options.connectTimeout = const Duration(seconds: 30);
     dio.options.receiveTimeout = const Duration(seconds: 30);
     dio.options.headers['Content-Type'] = 'application/json';
 
-    // Add interceptor to automatically inject token
-    if (tokenService != null) {
+    // Interceptor 1: Auto-inject token before each request
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          // Automatically inject token before each request
+          final token = await tokenService.getAccessToken();
+          if (token != null && token.isNotEmpty) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+          handler.next(options);
+        },
+      ),
+    );
+
+    // Interceptor 2: Handle token refresh on 401 errors
+    dio.interceptors.add(
+      RefreshTokenInterceptor(
+        dio: dio,
+        tokenService: tokenService,
+        baseUrl: baseUrl,
+        onRefreshFailed: onTokenRefreshFailed ?? () {},
+      ),
+    );
+
+    // Interceptor 3: Logging (debug mode only)
+    if (kDebugMode) {
       dio.interceptors.add(
-        InterceptorsWrapper(
-          onRequest: (options, handler) async {
-            // Automatically inject token before each request
-            final token = await tokenService!.getAccessToken();
-            if (token != null && token.isNotEmpty) {
-              options.headers['Authorization'] = 'Bearer $token';
-            }
-            handler.next(options);
-          },
-          onError: (error, handler) async {
-            // If we get 401, try to handle it gracefully
-            if (error.response?.statusCode == 401) {
-              // Token might be expired - could implement refresh logic here
-              // For now, just pass the error through
-            }
-            handler.next(error);
-          },
+        LogInterceptor(
+          requestBody: true,
+          responseBody: true,
+          error: true,
+          logPrint: (obj) => debugPrint(obj.toString()),
         ),
       );
     }
