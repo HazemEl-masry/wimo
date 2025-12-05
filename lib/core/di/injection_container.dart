@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wimo/core/services/api_services.dart';
 import 'package:wimo/core/services/token_service.dart';
+import 'package:wimo/core/services/websocket_service.dart';
 import 'package:wimo/features/auth/data/datasource/auth_remote_data_source.dart';
 import 'package:wimo/features/auth/data/repos/auth_repo_impl.dart';
 import 'package:wimo/features/auth/domain/repos/auth_repo.dart';
@@ -127,7 +128,11 @@ Future<void> init() async {
 
   // Repository
   sl.registerLazySingleton<ChatRepository>(
-    () => ChatRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()),
+    () => ChatRepositoryImpl(
+      remoteDataSource: sl(),
+      localDataSource: sl(),
+      webSocketService: sl(),
+    ),
   );
 
   // Data sources
@@ -172,6 +177,14 @@ Future<void> init() async {
         // When token refresh fails, logout user
         sl<AppStateCubit>().logout();
       },
+    ),
+  );
+
+  // WebSocket Service
+  sl.registerLazySingleton(
+    () => WebSocketService(
+      tokenService: sl(),
+      baseUrl: 'http://192.168.1.5:3000',
     ),
   );
 
