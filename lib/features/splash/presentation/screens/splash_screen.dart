@@ -58,6 +58,8 @@ class _SplashScreenState extends State<SplashScreen>
     return BlocListener<SplashCubit, SplashState>(
       listener: (context, state) {
         if (state is SplashNavigateToHome) {
+          context.go(AppRouter.home);
+        } else if (state is SplashNavigateToAuth) {
           context.go(AppRouter.auth);
         } else if (state is SplashNavigateToOnboarding) {
           context.go(AppRouter.onboarding);

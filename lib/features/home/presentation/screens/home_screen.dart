@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wimo/features/home/presentation/cubit/chat_list_cubit.dart';
 import 'package:wimo/features/home/presentation/widgets/chat_tile.dart';
@@ -38,6 +39,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            onPressed: () {
+              GoRouter.of(context).push('/settings');
+            },
+            icon: const Icon(Icons.settings),
+          ),
           IconButton(onPressed: () {}, icon: const Icon(Icons.dark_mode)),
           const ProfileWidget(),
         ],
@@ -152,13 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Navigate to new chat screen
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('New chat feature coming soon'),
-              duration: Duration(seconds: 2),
-            ),
-          );
+          GoRouter.of(context).push('/contacts');
         },
         child: const Icon(Icons.add_comment),
       ),

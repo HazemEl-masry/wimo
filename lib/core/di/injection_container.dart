@@ -14,6 +14,7 @@ import 'package:wimo/features/onboarding/domain/repositories/onboarding_reposito
 import 'package:wimo/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:wimo/features/splash/data/repositories/splash_repository_impl.dart';
 import 'package:wimo/features/splash/domain/repositories/splash_repository.dart';
+import 'package:wimo/features/splash/domain/usecases/check_auth_status.dart';
 import 'package:wimo/features/splash/domain/usecases/check_onboarding_status.dart';
 import 'package:wimo/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:wimo/features/user/data/datasource/user_remote_data_source.dart';
@@ -23,7 +24,15 @@ import 'package:wimo/features/chat/data/datasource/message_remote_data_source.da
 import 'package:wimo/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:wimo/features/chat/domain/repositories/chat_repository.dart';
 import 'package:wimo/features/chat/domain/usecases/get_chats_usecase.dart';
+import 'package:wimo/core/database/app_database.dart';
+import 'package:wimo/features/chat/data/datasource/chat_local_data_source.dart';
+import 'package:wimo/features/backup/data/datasource/backup_local_data_source.dart';
+import 'package:wimo/features/backup/presentation/cubit/backup_cubit.dart';
 import 'package:wimo/features/home/presentation/cubit/chat_list_cubit.dart';
+import 'package:wimo/features/user/data/repositories/user_repository_impl.dart';
+import 'package:wimo/features/user/domain/repositories/user_repository.dart';
+import 'package:wimo/features/user/domain/usecases/get_current_user_usecase.dart';
+import 'package:wimo/features/user/presentation/cubit/profile_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -32,14 +41,21 @@ Future<void> init() async {
 
   // ==================== Splash ====================
   // Cubit
-  sl.registerFactory(() => SplashCubit(checkOnboardingStatus: sl()));
+  sl.registerFactory(
+    () => SplashCubit(checkOnboardingStatus: sl(), checkAuthStatus: sl()),
+  );
 
   // Use cases
   sl.registerLazySingleton(() => CheckOnboardingStatus(sl()));
+  sl.registerLazySingleton(() => CheckAuthStatus(sl()));
 
   // Repository
   sl.registerLazySingleton<SplashRepository>(
-    () => SplashRepositoryImpl(onboardingRepository: sl()),
+    () => SplashRepositoryImpl(
+      onboardingRepository: sl(),
+      tokenService: sl(),
+      apiServices: sl(),
+    ),
   );
 
   // ==================== Onboarding ====================
@@ -78,6 +94,17 @@ Future<void> init() async {
   );
 
   // ==================== User Management ====================
+  // Cubit
+  sl.registerFactory(() => ProfileCubit(getCurrentUserUseCase: sl()));
+
+  // Use cases
+  sl.registerLazySingleton(() => GetCurrentUserUseCase(repository: sl()));
+
+  // Repository
+  sl.registerLazySingleton<UserRepository>(
+    () => UserRepositoryImpl(remoteDataSource: sl(), tokenService: sl()),
+  );
+
   // Data sources
   sl.registerLazySingleton<UserRemoteDataSource>(
     () => UserRemoteDataSourceImpl(apiServices: sl()),
@@ -98,12 +125,16 @@ Future<void> init() async {
 
   // Repository
   sl.registerLazySingleton<ChatRepository>(
-    () => ChatRepositoryImpl(remoteDataSource: sl()),
+    () => ChatRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()),
   );
 
   // Data sources
   sl.registerLazySingleton<ChatRemoteDataSource>(
     () => ChatRemoteDataSourceImpl(apiServices: sl()),
+  );
+
+  sl.registerLazySingleton<ChatLocalDataSource>(
+    () => ChatLocalDataSourceImpl(sl()),
   );
 
   // ==================== Messages ====================
@@ -112,7 +143,19 @@ Future<void> init() async {
     () => MessageRemoteDataSourceImpl(apiServices: sl()),
   );
 
+  // ==================== Backup ====================
+  // Cubit
+  sl.registerFactory(() => BackupCubit(sl()));
+
+  // Data sources
+  sl.registerLazySingleton<BackupLocalDataSource>(
+    () => BackupLocalDataSourceImpl(),
+  );
+
   //! Core
+  // Database
+  sl.registerLazySingleton(() => AppDatabase());
+
   // Services
   sl.registerLazySingleton(() => ApiServices(dio: sl()));
   sl.registerLazySingleton(() => TokenService());

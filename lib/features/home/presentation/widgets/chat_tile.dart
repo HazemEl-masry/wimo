@@ -58,7 +58,9 @@ class ChatTile extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 28.r,
-            backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+            backgroundColor: Theme.of(
+              context,
+            ).primaryColor.withValues(alpha: 0.1),
             backgroundImage: avatar != null ? NetworkImage(avatar) : null,
             child: avatar == null
                 ? Text(

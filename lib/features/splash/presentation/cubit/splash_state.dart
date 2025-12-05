@@ -18,6 +18,10 @@ class SplashNavigateToHome extends SplashState {
   const SplashNavigateToHome();
 }
 
+class SplashNavigateToAuth extends SplashState {
+  const SplashNavigateToAuth();
+}
+
 /// State to navigate to onboarding screen
 class SplashNavigateToOnboarding extends SplashState {
   const SplashNavigateToOnboarding();

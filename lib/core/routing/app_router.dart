@@ -4,18 +4,23 @@ import 'package:wimo/core/di/injection_container.dart';
 import 'package:wimo/features/auth/presentation/cubit/auth_phone_cubit/auth_phone_cubit.dart';
 import 'package:wimo/features/auth/presentation/cubit/verify_otp_cubit/verify_otp_cubit.dart';
 import 'package:wimo/features/auth/presentation/screens/auth_screen.dart';
+import 'package:wimo/features/contacts/data/presentation/screens/contacts_screen.dart';
 import 'package:wimo/features/home/presentation/cubit/chat_list_cubit.dart';
 import 'package:wimo/features/home/presentation/screens/home_screen.dart';
 import 'package:wimo/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:wimo/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:wimo/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:wimo/features/splash/presentation/screens/splash_screen.dart';
+import 'package:wimo/features/user/presentation/cubit/profile_cubit.dart';
+import 'package:wimo/features/settings/presentation/screens/settings_screen.dart';
 
 class AppRouter {
   static const String splash = '/';
   static const String onboarding = '/onboarding';
   static const String auth = '/auth';
   static const String home = '/home';
+  static const String contacts = '/contacts';
+  static const String settings = '/settings';
 
   static GoRouter router = GoRouter(
     initialLocation: splash,
@@ -52,10 +57,25 @@ class AppRouter {
       GoRoute(
         path: home,
         name: 'home',
-        builder: (context, state) => BlocProvider(
-          create: (context) => sl<ChatListCubit>(),
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (context) => sl<ChatListCubit>()),
+            BlocProvider(
+              create: (context) => sl<ProfileCubit>()..loadProfile(),
+            ),
+          ],
           child: const HomeScreen(),
         ),
+      ),
+      GoRoute(
+        path: contacts,
+        name: 'contacts',
+        builder: (context, state) => const ContactsScreen(),
+      ),
+      GoRoute(
+        path: settings,
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
   );
