@@ -14,6 +14,7 @@ import 'package:wimo/features/contacts/data/repositories/contacts_repository_imp
 import 'package:wimo/features/contacts/domain/repositories/contacts_repository.dart';
 import 'package:wimo/features/contacts/domain/usecases/get_contacts_usecase.dart';
 import 'package:wimo/features/contacts/domain/usecases/sync_contacts_usecase.dart';
+import 'package:wimo/features/contacts/domain/usecases/verify_add_contact_usecase.dart';
 import 'package:wimo/features/contacts/presentation/cubit/contacts_cubit.dart';
 import 'package:wimo/features/onboarding/data/repositories/onboarding_repository_impl.dart';
 import 'package:wimo/features/onboarding/domain/repositories/onboarding_repository.dart';
@@ -194,12 +195,17 @@ Future<void> init() async {
 
   // Contacts Feature
   sl.registerFactory(
-    () => ContactsCubit(getContactsUseCase: sl(), syncContactsUseCase: sl()),
+    () => ContactsCubit(
+      getContactsUseCase: sl(),
+      syncContactsUseCase: sl(),
+      verifyAddContactUseCase: sl(),
+    ),
   );
 
   // Use Cases
   sl.registerLazySingleton(() => GetContactsUseCase(sl()));
   sl.registerLazySingleton(() => SyncContactsUseCase(sl()));
+  sl.registerLazySingleton(() => VerifyAddContactUseCase(repository: sl()));
 
   // Repository
   sl.registerLazySingleton<ContactsRepository>(

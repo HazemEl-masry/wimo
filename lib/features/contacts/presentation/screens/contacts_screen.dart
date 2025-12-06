@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wimo/core/di/injection_container.dart';
 import 'package:wimo/features/contacts/presentation/cubit/contacts_cubit.dart';
+import 'package:wimo/features/contacts/presentation/widgets/add_contact_bottom_sheet.dart';
+import 'package:wimo/features/contacts/presentation/widgets/contact_list_item.dart';
+import 'package:wimo/features/contacts/presentation/widgets/contacts_empty_state.dart';
+import 'package:wimo/features/contacts/presentation/widgets/contacts_error_state.dart';
 
+/// Main contacts screen - clean and focused
 class ContactsScreen extends StatelessWidget {
   const ContactsScreen({super.key});
 
@@ -11,149 +16,223 @@ class ContactsScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => sl<ContactsCubit>()..loadContacts(),
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Contacts'),
-          actions: [
-            BlocBuilder<ContactsCubit, ContactsState>(
-              builder: (context, state) {
-                if (state is ContactsLoading) {
-                  return const Padding(
-                    padding: EdgeInsets.only(right: 16.0),
-                    child: Center(
-                      child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ),
-                  );
-                }
-                return PopupMenuButton(
-                  onSelected: (value) {
-                    if (value == 'add') {
-                      _showAddContactBottomSheet(context);
-                    } else if (value == 'refresh') {
-                      context.read<ContactsCubit>().loadContacts();
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'add',
-                      child: Text('Add Contact'),
-                    ),
-                    const PopupMenuItem(
-                      value: 'refresh',
-                      child: Text('Refresh'),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
+        backgroundColor: const Color(0xFFF8F9FA),
+        extendBodyBehindAppBar: true,
+        appBar: _buildAppBar(context),
+        body: _buildBody(),
+        floatingActionButton: _buildFAB(context),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      title: const Text(
+        'Contacts',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 28,
+          letterSpacing: -0.5,
         ),
-        body: BlocBuilder<ContactsCubit, ContactsState>(
+      ),
+      actions: [
+        BlocBuilder<ContactsCubit, ContactsState>(
           builder: (context, state) {
-            if (state is ContactsLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is ContactsError) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(state.errorMessage),
-                    ElevatedButton(
-                      onPressed: () =>
-                          context.read<ContactsCubit>().loadContacts(),
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              );
-            } else if (state is ContactsLoaded) {
-              if (state.contacts.isEmpty) {
-                return const Center(child: Text('No contacts found'));
-              }
-              return ListView.builder(
-                itemCount: state.contacts.length,
-                itemBuilder: (context, index) {
-                  final contact = state.contacts[index];
-                  return ListTile(
-                    leading: CircleAvatar(
-                      child: Text(contact.name[0].toUpperCase()),
-                    ),
-                    title: Text(contact.name),
-                    subtitle: Text(contact.contactPhone),
-                  );
-                },
-              );
+            if (state is ContactsRefreshing) {
+              return _buildRefreshingIndicator();
             }
-            return const SizedBox();
+            return _buildPopupMenu(context);
           },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRefreshingIndicator() {
+    return Padding(
+      padding: const EdgeInsets.only(right: 16.0),
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: const SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(strokeWidth: 2.5),
+          ),
         ),
       ),
     );
   }
 
-  void _showAddContactBottomSheet(BuildContext context) {
-    final nameController = TextEditingController();
-    final phoneController = TextEditingController();
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (sheetContext) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
-            left: 16,
-            right: 16,
-            top: 16,
+  Widget _buildPopupMenu(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(right: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'Add Contact',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ],
+      ),
+      child: PopupMenuButton(
+        icon: const Icon(Icons.more_vert),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 8,
+        onSelected: (value) => _handleMenuAction(context, value),
+        itemBuilder: (context) => [
+          _buildMenuItem('add', Icons.person_add, 'Add Contact', [
+            const Color(0xFF667EEA),
+            const Color(0xFF764BA2),
+          ]),
+          _buildMenuItem('refresh', Icons.refresh, 'Refresh', [
+            const Color(0xFF11998E),
+            const Color(0xFF38EF7D),
+          ]),
+        ],
+      ),
+    );
+  }
+
+  PopupMenuItem<String> _buildMenuItem(
+    String value,
+    IconData icon,
+    String text,
+    List<Color> gradientColors,
+  ) {
+    return PopupMenuItem(
+      value: value,
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: gradientColors),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, size: 18, color: Colors.white),
+          ),
+          const SizedBox(width: 12),
+          Text(text),
+        ],
+      ),
+    );
+  }
+
+  void _handleMenuAction(BuildContext context, String value) {
+    if (value == 'add') {
+      _showAddContactBottomSheet(context);
+    } else if (value == 'refresh') {
+      context.read<ContactsCubit>().refreshContacts();
+    }
+  }
+
+  Widget _buildBody() {
+    return BlocBuilder<ContactsCubit, ContactsState>(
+      builder: (context, state) {
+        if (state is ContactsLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is ContactsRefreshing) {
+          return _buildContactsList(context, state.currentContacts);
+        } else if (state is ContactsError) {
+          return ContactsErrorState(
+            errorMessage: state.errorMessage,
+            onRetry: () => context.read<ContactsCubit>().loadContacts(),
+          );
+        } else if (state is ContactsLoaded) {
+          if (state.contacts.isEmpty) {
+            return ContactsEmptyState(
+              onAddContact: () => _showAddContactBottomSheet(context),
+            );
+          }
+          return _buildContactsList(context, state.contacts);
+        }
+        return const SizedBox();
+      },
+    );
+  }
+
+  Widget _buildContactsList(BuildContext context, List contacts) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        context.read<ContactsCubit>().refreshContacts();
+      },
+      child: ListView.builder(
+        padding: const EdgeInsets.only(
+          top: 100,
+          bottom: 20,
+          left: 16,
+          right: 16,
+        ),
+        itemCount: contacts.length,
+        itemBuilder: (context, index) {
+          final contact = contacts[index];
+          return ContactListItem(
+            contact: contact,
+            onTap: () {
+              // TODO: Navigate to chat or contact details
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildFAB(BuildContext context) {
+    return BlocBuilder<ContactsCubit, ContactsState>(
+      builder: (context, state) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: const LinearGradient(
+              colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF667EEA).withOpacity(0.4),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
               ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Name',
-                  hintText: 'Enter contact name',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: phoneController,
-                decoration: const InputDecoration(
-                  labelText: 'Phone Number',
-                  hintText: 'Enter phone number (e.g. +123...)',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.phone,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  final phone = phoneController.text.trim();
-                  if (phone.isNotEmpty) {
-                    // Note: Backend currently only uses phone number for sync.
-                    // Name from input is not cached locally yet as per current architecture.
-                    context.read<ContactsCubit>().syncContacts([phone]);
-                    Navigator.pop(sheetContext);
-                  }
-                },
-                child: const Text('Save'),
-              ),
-              const SizedBox(height: 24),
             ],
+          ),
+          child: FloatingActionButton(
+            onPressed: () => _showAddContactBottomSheet(context),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            child: const Icon(Icons.person_add, size: 28),
           ),
         );
       },
+    );
+  }
+
+  void _showAddContactBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => BlocProvider.value(
+        value: context.read<ContactsCubit>(),
+        child: const AddContactBottomSheet(),
+      ),
     );
   }
 }
