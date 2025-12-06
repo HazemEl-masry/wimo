@@ -157,7 +157,11 @@ Future<void> init() async {
   // ==================== Messages ====================
   // Cubit
   sl.registerFactory(
-    () => MessagesCubit(getMessagesUseCase: sl(), sendMessageUseCase: sl()),
+    () => MessagesCubit(
+      getMessagesUseCase: sl(),
+      sendMessageUseCase: sl(),
+      webSocketService: sl(),
+    ),
   );
 
   // Use cases

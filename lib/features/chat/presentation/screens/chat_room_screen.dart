@@ -225,7 +225,7 @@ class ChatRoomScreen extends StatelessWidget {
         );
       },
       onTyping: () {
-        // TODO: Send typing event via WebSocket
+        context.read<MessagesCubit>().sendTyping();
       },
     );
   }
