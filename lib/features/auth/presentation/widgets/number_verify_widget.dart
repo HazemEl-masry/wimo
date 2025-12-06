@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wimo/features/auth/presentation/cubit/auth_phone_cubit/auth_phone_cubit.dart';
 import 'package:wimo/features/auth/presentation/cubit/verify_otp_cubit/verify_otp_cubit.dart';
-import 'package:wimo/features/auth/presentation/widgets/overlay_message.dart';
+import 'package:wimo/core/widgets/overlay_message.dart';
 import 'package:wimo/features/app/presentation/cubit/app_state_cubit.dart';
 import 'package:wimo/features/auth/presentation/widgets/otp_input_bottom_sheet.dart';
 

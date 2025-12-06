@@ -10,6 +10,11 @@ import 'package:wimo/features/auth/domain/usecases/send_otp_usecase.dart';
 import 'package:wimo/features/auth/domain/usecases/verify_otp_usecase.dart';
 import 'package:wimo/features/auth/presentation/cubit/auth_phone_cubit/auth_phone_cubit.dart';
 import 'package:wimo/features/auth/presentation/cubit/verify_otp_cubit/verify_otp_cubit.dart';
+import 'package:wimo/features/contacts/data/repositories/contacts_repository_impl.dart';
+import 'package:wimo/features/contacts/domain/repositories/contacts_repository.dart';
+import 'package:wimo/features/contacts/domain/usecases/get_contacts_usecase.dart';
+import 'package:wimo/features/contacts/domain/usecases/sync_contacts_usecase.dart';
+import 'package:wimo/features/contacts/presentation/cubit/contacts_cubit.dart';
 import 'package:wimo/features/onboarding/data/repositories/onboarding_repository_impl.dart';
 import 'package:wimo/features/onboarding/domain/repositories/onboarding_repository.dart';
 import 'package:wimo/features/onboarding/presentation/cubit/onboarding_cubit.dart';
@@ -19,7 +24,7 @@ import 'package:wimo/features/splash/domain/usecases/check_auth_status.dart';
 import 'package:wimo/features/splash/domain/usecases/check_onboarding_status.dart';
 import 'package:wimo/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:wimo/features/user/data/datasource/user_remote_data_source.dart';
-import 'package:wimo/features/contacts/data/datasource/contact_remote_data_source.dart';
+import 'package:wimo/features/contacts/data/datasources/contact_remote_data_source.dart';
 import 'package:wimo/features/chat/data/datasource/chat_remote_data_source.dart';
 import 'package:wimo/features/chat/data/datasource/message_remote_data_source.dart';
 import 'package:wimo/features/chat/data/repositories/chat_repository_impl.dart';
@@ -118,12 +123,6 @@ Future<void> init() async {
     () => UserRemoteDataSourceImpl(apiServices: sl()),
   );
 
-  // ==================== Contacts ====================
-  // Data sources
-  sl.registerLazySingleton<ContactRemoteDataSource>(
-    () => ContactRemoteDataSourceImpl(apiServices: sl()),
-  );
-
   // ==================== Chat ====================
   // Cubit
   sl.registerFactory(() => ChatListCubit(getChatsUseCase: sl()));
@@ -193,6 +192,27 @@ Future<void> init() async {
     ),
   );
 
+  // Contacts Feature
+  sl.registerFactory(
+    () => ContactsCubit(getContactsUseCase: sl(), syncContactsUseCase: sl()),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetContactsUseCase(sl()));
+  sl.registerLazySingleton(() => SyncContactsUseCase(sl()));
+
+  // Repository
+  sl.registerLazySingleton<ContactsRepository>(
+    () => ContactsRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  // Data Source
+  sl.registerLazySingleton<ContactRemoteDataSource>(
+    () => ContactRemoteDataSourceImpl(apiServices: sl()),
+  );
+
+  // ------------------------------------------------------------------------------------------------
   // External
+  // ------------------------------------------------------------------------------------------------
   sl.registerLazySingleton(() => Dio());
 }

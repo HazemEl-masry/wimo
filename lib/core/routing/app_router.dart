@@ -7,11 +7,12 @@ import 'package:wimo/features/app/presentation/cubit/connection_cubit.dart';
 import 'package:wimo/features/auth/presentation/cubit/auth_phone_cubit/auth_phone_cubit.dart';
 import 'package:wimo/features/auth/presentation/cubit/verify_otp_cubit/verify_otp_cubit.dart';
 import 'package:wimo/features/auth/presentation/screens/auth_screen.dart';
-import 'package:wimo/features/contacts/data/presentation/screens/contacts_screen.dart';
+import 'package:wimo/features/contacts/presentation/screens/contacts_screen.dart';
 import 'package:wimo/features/home/presentation/cubit/chat_list_cubit.dart';
 import 'package:wimo/features/home/presentation/screens/home_screen.dart';
 import 'package:wimo/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:wimo/features/onboarding/presentation/screens/onboarding_screen.dart';
+import 'package:wimo/features/settings/presentation/widgets/backup_and_restore_widget.dart';
 import 'package:wimo/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:wimo/features/splash/presentation/screens/splash_screen.dart';
 import 'package:wimo/features/user/presentation/cubit/profile_cubit.dart';
@@ -24,6 +25,7 @@ class AppRouter {
   static const String home = '/home';
   static const String contacts = '/contacts';
   static const String settings = '/settings';
+  static const String backupAndRestore = '/backup_and_restore';
 
   static final _appStateCubit = sl<AppStateCubit>();
 
@@ -51,6 +53,7 @@ class AppRouter {
             providers: [
               BlocProvider(create: (_) => sl<AppStateCubit>()),
               BlocProvider(create: (_) => sl<ConnectionCubit>()),
+              BlocProvider(create: (_) => sl<ProfileCubit>()),
             ],
             child: child,
           );
@@ -88,11 +91,8 @@ class AppRouter {
           GoRoute(
             path: home,
             name: 'home',
-            builder: (context, state) => MultiBlocProvider(
-              providers: [
-                BlocProvider(create: (context) => sl<ChatListCubit>()),
-                BlocProvider(create: (context) => sl<ProfileCubit>()),
-              ],
+            builder: (context, state) => BlocProvider(
+              create: (context) => sl<ChatListCubit>(),
               child: const HomeScreen(),
             ),
           ),
@@ -105,6 +105,11 @@ class AppRouter {
             path: settings,
             name: 'settings',
             builder: (context, state) => const SettingsScreen(),
+          ),
+          GoRoute(
+            path: backupAndRestore,
+            name: 'backup_and_restore',
+            builder: (context, state) => const BackupAndRestoreWidget(),
           ),
         ],
       ),

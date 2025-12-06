@@ -17,7 +17,9 @@ class OverlayMessage {
 
     // Auto-dismiss after 3 seconds
     Future.delayed(const Duration(seconds: 5), () {
-      overlayEntry.remove();
+      if (overlayEntry.mounted) {
+        overlayEntry.remove();
+      }
     });
   }
 }

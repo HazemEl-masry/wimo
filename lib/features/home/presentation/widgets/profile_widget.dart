@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:wimo/features/user/presentation/cubit/profile_cubit.dart';
 
 class ProfileWidget extends StatelessWidget {
@@ -16,7 +17,7 @@ class ProfileWidget extends StatelessWidget {
               state.user.avatar != null && state.user.avatar!.isNotEmpty;
           return GestureDetector(
             onTap: () {
-              // TODO: Navigate to profile screen
+              GoRouter.of(context).push('/settings');
             },
             child: CircleAvatar(
               radius: 24.r,

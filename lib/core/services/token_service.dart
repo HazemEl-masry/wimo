@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class TokenService {
@@ -65,5 +67,28 @@ class TokenService {
   /// Clear specific token
   Future<void> clearAccessToken() async {
     await _storage.delete(key: _accessTokenKey);
+  }
+
+  /// Get phone number from stored access token
+  Future<String?> getPhoneFromToken() async {
+    try {
+      final token = await getAccessToken();
+      if (token == null || token.isEmpty) return null;
+
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+
+      final payload = parts[1];
+      final normalized = base64Url.normalize(payload);
+      final resp = utf8.decode(base64Url.decode(normalized));
+
+      final payloadMap = json.decode(resp);
+      if (payloadMap is Map<String, dynamic>) {
+        return payloadMap['phone'] as String?;
+      }
+    } catch (e) {
+      debugPrint('Error decoding token: $e');
+    }
+    return null;
   }
 }

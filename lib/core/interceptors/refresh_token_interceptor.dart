@@ -125,7 +125,14 @@ class RefreshTokenInterceptor extends Interceptor {
       // Extract new tokens from validated response
       final data = response.data['data'] as Map<String, dynamic>;
       final newAccessToken = data['accessToken'] as String;
-      final newRefreshToken = data['refreshToken'] as String;
+
+      // Use new refresh token if provided, otherwise keep using the existing one
+      final newRefreshToken =
+          (data['refreshToken'] != null &&
+              data['refreshToken'].toString().isNotEmpty)
+          ? data['refreshToken'] as String
+          : refreshToken;
+
       final userId = data['userId'] as String? ?? '';
 
       _logDebug('💾 Saving new tokens to secure storage...');
@@ -191,10 +198,8 @@ class RefreshTokenInterceptor extends Interceptor {
       throw RefreshTokenException('Missing or empty accessToken in response');
     }
 
-    if (data['refreshToken'] == null ||
-        data['refreshToken'].toString().isEmpty) {
-      throw RefreshTokenException('Missing or empty refreshToken in response');
-    }
+    // Refresh token is optional - some backends only rotate it periodically
+    // We'll reuse the existing one if not provided
 
     _logDebug('✅ Refresh response validated');
   }

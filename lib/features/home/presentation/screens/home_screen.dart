@@ -7,6 +7,7 @@ import 'package:wimo/features/home/presentation/cubit/chat_list_cubit.dart';
 import 'package:wimo/features/home/presentation/widgets/chat_tile.dart';
 import 'package:wimo/features/home/presentation/widgets/profile_widget.dart';
 import 'package:wimo/features/user/presentation/cubit/profile_cubit.dart';
+import 'package:wimo/core/widgets/overlay_message.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,10 +17,19 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late ChatListCubit _chatListCubit;
+
   @override
   void initState() {
     super.initState();
     _initializeHome();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Cache the reference safely
+    _chatListCubit = context.read<ChatListCubit>();
   }
 
   /// Initialize home screen with parallel data loading
@@ -46,8 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    // Stop listening when screen is disposed
-    context.read<ChatListCubit>().stopListening();
+    // Stop listening when screen is disposed, using cached reference
+    _chatListCubit.stopListening();
     super.dispose();
   }
 
@@ -166,11 +176,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     chat: chat,
                     onTap: () {
                       // TODO: Navigate to individual chat screen
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Chat screen not implemented yet'),
-                          duration: Duration(seconds: 2),
-                        ),
+                      OverlayMessage.show(
+                        context: context,
+                        message: 'Chat screen not implemented yet',
+                        isError: false,
                       );
                     },
                   );
