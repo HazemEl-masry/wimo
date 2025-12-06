@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// Error state widget for contacts screen
 class ContactsErrorState extends StatelessWidget {
@@ -15,17 +16,17 @@ class ContactsErrorState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(32.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _buildErrorIcon(),
-            const SizedBox(height: 28),
-            const Text(
+            SizedBox(height: 28.h),
+            Text(
               'Oops!',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 24.h, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12.h),
             Text(
               errorMessage,
               textAlign: TextAlign.center,
@@ -35,7 +36,7 @@ class ContactsErrorState extends StatelessWidget {
                 height: 1.5,
               ),
             ),
-            const SizedBox(height: 36),
+            SizedBox(height: 36.h),
             _buildRetryButton(),
           ],
         ),
@@ -45,7 +46,7 @@ class ContactsErrorState extends StatelessWidget {
 
   Widget _buildErrorIcon() {
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: EdgeInsets.all(32.w),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.red.withOpacity(0.1), Colors.orange.withOpacity(0.1)],
@@ -53,7 +54,7 @@ class ContactsErrorState extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: Container(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24.w),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [Color(0xFFFF6B6B), Color(0xFFEE5A6F)],
@@ -67,7 +68,7 @@ class ContactsErrorState extends StatelessWidget {
             ),
           ],
         ),
-        child: const Icon(Icons.error_outline, size: 56, color: Colors.white),
+        child: Icon(Icons.error_outline, size: 56.w, color: Colors.white),
       ),
     );
   }
@@ -75,35 +76,35 @@ class ContactsErrorState extends StatelessWidget {
   Widget _buildRetryButton() {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         gradient: const LinearGradient(
           colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
         ),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF667EEA).withOpacity(0.4),
-            blurRadius: 20,
+            blurRadius: 20.r,
             offset: const Offset(0, 10),
           ),
         ],
       ),
       child: ElevatedButton.icon(
         onPressed: onRetry,
-        icon: const Icon(Icons.refresh, color: Colors.white),
-        label: const Text(
+        icon: Icon(Icons.refresh, color: Colors.white, size: 22.w),
+        label: Text(
           'Try Again',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 16,
+            fontSize: 16.sp,
             fontWeight: FontWeight.w600,
           ),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 18),
+          padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 18.h),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16.r),
           ),
         ),
       ),

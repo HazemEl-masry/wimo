@@ -42,6 +42,11 @@ import 'package:wimo/features/user/domain/usecases/get_current_user_usecase.dart
 import 'package:wimo/features/user/presentation/cubit/profile_cubit.dart';
 import 'package:wimo/features/app/presentation/cubit/app_state_cubit.dart';
 import 'package:wimo/features/app/presentation/cubit/connection_cubit.dart';
+import 'package:wimo/features/chat/data/repositories/message_repository_impl.dart';
+import 'package:wimo/features/chat/domain/repositories/messages_repository.dart';
+import 'package:wimo/features/chat/domain/usecases/get_messages_usecase.dart';
+import 'package:wimo/features/chat/domain/usecases/send_message_usecase.dart';
+import 'package:wimo/features/chat/presentation/cubit/messages_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -150,6 +155,20 @@ Future<void> init() async {
   );
 
   // ==================== Messages ====================
+  // Cubit
+  sl.registerFactory(
+    () => MessagesCubit(getMessagesUseCase: sl(), sendMessageUseCase: sl()),
+  );
+
+  // Use cases
+  sl.registerLazySingleton(() => GetMessagesUseCase(repository: sl()));
+  sl.registerLazySingleton(() => SendMessageUseCase(repository: sl()));
+
+  // Repository
+  sl.registerLazySingleton<MessagesRepository>(
+    () => MessagesRepositoryImpl(remoteDataSource: sl()),
+  );
+
   // Data sources
   sl.registerLazySingleton<MessageRemoteDataSource>(
     () => MessageRemoteDataSourceImpl(apiServices: sl()),

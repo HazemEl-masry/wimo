@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wimo/core/utils/formatters.dart';
 import 'package:wimo/core/utils/validators.dart';
 import 'package:wimo/core/widgets/overlay_message.dart';
@@ -34,9 +35,9 @@ class _AddContactBottomSheetState extends State<AddContactBottomSheet> {
       ),
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 24,
-        right: 24,
-        top: 24,
+        left: 24.w,
+        right: 24.w,
+        top: 24.h,
       ),
       child: BlocConsumer<ContactsCubit, ContactsState>(
         listener: _handleStateChanges,
@@ -48,17 +49,17 @@ class _AddContactBottomSheetState extends State<AddContactBottomSheet> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _buildHandleBar(),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
                 _buildHeader(context),
-                const SizedBox(height: 28),
+                SizedBox(height: 28.h),
                 _buildNameField(isLoading),
-                const SizedBox(height: 18),
+                SizedBox(height: 18.h),
                 _buildPhoneField(isLoading),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
                 _buildInfoBox(),
-                const SizedBox(height: 28),
+                SizedBox(height: 28.h),
                 _buildSaveButton(context, isLoading),
-                const SizedBox(height: 36),
+                SizedBox(height: 36.h),
               ],
             ),
           );
@@ -93,11 +94,11 @@ class _AddContactBottomSheetState extends State<AddContactBottomSheet> {
   Widget _buildHandleBar() {
     return Center(
       child: Container(
-        width: 48,
-        height: 5,
+        width: 48.w,
+        height: 5.h,
         decoration: BoxDecoration(
           color: Colors.grey[300],
-          borderRadius: BorderRadius.circular(3),
+          borderRadius: BorderRadius.circular(3.r),
         ),
       ),
     );
@@ -107,12 +108,12 @@ class _AddContactBottomSheetState extends State<AddContactBottomSheet> {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(14),
+          padding: EdgeInsets.all(14.w),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
             ),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16.r),
             boxShadow: [
               BoxShadow(
                 color: const Color(0xFF667EEA).withOpacity(0.4),
@@ -121,21 +122,21 @@ class _AddContactBottomSheetState extends State<AddContactBottomSheet> {
               ),
             ],
           ),
-          child: const Icon(Icons.person_add, color: Colors.white, size: 28),
+          child: Icon(Icons.person_add, color: Colors.white, size: 28.w),
         ),
-        const SizedBox(width: 18),
-        const Expanded(
+        SizedBox(width: 18.w),
+        Expanded(
           child: Text(
             'Add New Contact',
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 24.h,
               fontWeight: FontWeight.bold,
               letterSpacing: -0.5,
             ),
           ),
         ),
         IconButton(
-          icon: const Icon(Icons.close, size: 28),
+          icon: Icon(Icons.close, size: 28.w),
           onPressed: () => Navigator.pop(context),
         ),
       ],
@@ -147,7 +148,7 @@ class _AddContactBottomSheetState extends State<AddContactBottomSheet> {
       controller: _nameController,
       enabled: !isLoading,
       textCapitalization: TextCapitalization.words,
-      style: const TextStyle(fontSize: 16),
+      style: TextStyle(fontSize: 16.h),
       decoration: _inputDecoration(
         label: 'Name',
         hint: 'Enter contact name',
@@ -163,7 +164,7 @@ class _AddContactBottomSheetState extends State<AddContactBottomSheet> {
       enabled: !isLoading,
       keyboardType: TextInputType.phone,
       inputFormatters: [Formatters.phoneFormatter],
-      style: const TextStyle(fontSize: 16),
+      style: TextStyle(fontSize: 16.h),
       decoration: _inputDecoration(
         label: 'Phone Number',
         hint: '+1234567890',
@@ -181,28 +182,28 @@ class _AddContactBottomSheetState extends State<AddContactBottomSheet> {
     return InputDecoration(
       labelText: label,
       hintText: hint,
-      prefixIcon: Icon(icon, size: 22),
+      prefixIcon: Icon(icon, size: 22.w),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         borderSide: BorderSide(color: Colors.grey[300]!),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         borderSide: BorderSide(color: Colors.grey[300]!),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         borderSide: const BorderSide(color: Color(0xFF667EEA), width: 2),
       ),
       filled: true,
       fillColor: const Color(0xFFF8F9FA),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
     );
   }
 
   Widget _buildInfoBox() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -219,27 +220,23 @@ class _AddContactBottomSheetState extends State<AddContactBottomSheet> {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
                 colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
               ),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10.r),
             ),
-            child: const Icon(
-              Icons.info_outline,
-              color: Colors.white,
-              size: 18,
-            ),
+            child: Icon(Icons.info_outline, color: Colors.white, size: 18.w),
           ),
-          const SizedBox(width: 14),
-          const Expanded(
+          SizedBox(width: 14.w),
+          Expanded(
             child: Text(
               'Only contacts using this app can be added',
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 13.h,
                 fontWeight: FontWeight.w500,
-                color: Color(0xFF667EEA),
+                color: const Color(0xFF667EEA),
               ),
             ),
           ),
@@ -251,14 +248,14 @@ class _AddContactBottomSheetState extends State<AddContactBottomSheet> {
   Widget _buildSaveButton(BuildContext context, bool isLoading) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         gradient: const LinearGradient(
           colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
         ),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF667EEA).withOpacity(0.4),
-            blurRadius: 20,
+            blurRadius: 20.r,
             offset: const Offset(0, 10),
           ),
         ],
@@ -269,25 +266,25 @@ class _AddContactBottomSheetState extends State<AddContactBottomSheet> {
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
           disabledBackgroundColor: Colors.grey[300],
-          padding: const EdgeInsets.symmetric(vertical: 18),
+          padding: EdgeInsets.symmetric(vertical: 18.h),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16.r),
           ),
         ),
         child: isLoading
-            ? const SizedBox(
-                height: 22,
-                width: 22,
-                child: CircularProgressIndicator(
+            ? SizedBox(
+                height: 22.h,
+                width: 22.h,
+                child: const CircularProgressIndicator(
                   strokeWidth: 2.5,
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               )
-            : const Text(
+            : Text(
                 'Add Contact',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 17,
+                  fontSize: 17.h,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.3,
                 ),

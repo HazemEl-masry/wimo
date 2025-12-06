@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wimo/core/di/injection_container.dart';
+import 'package:wimo/features/chat/presentation/screens/chat_room_screen.dart';
 import 'package:wimo/features/contacts/presentation/cubit/contacts_cubit.dart';
 import 'package:wimo/features/contacts/presentation/widgets/add_contact_bottom_sheet.dart';
 import 'package:wimo/features/contacts/presentation/widgets/contact_list_item.dart';
@@ -29,11 +31,11 @@ class ContactsScreen extends StatelessWidget {
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.transparent,
-      title: const Text(
+      title: Text(
         'Contacts',
         style: TextStyle(
           fontWeight: FontWeight.bold,
-          fontSize: 28,
+          fontSize: 28.sp,
           letterSpacing: -0.5,
         ),
       ),
@@ -52,10 +54,10 @@ class ContactsScreen extends StatelessWidget {
 
   Widget _buildRefreshingIndicator() {
     return Padding(
-      padding: const EdgeInsets.only(right: 16.0),
+      padding: EdgeInsets.only(right: 16.w),
       child: Center(
         child: Container(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.all(8.w),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -79,10 +81,10 @@ class ContactsScreen extends StatelessWidget {
 
   Widget _buildPopupMenu(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(right: 12),
+      margin: EdgeInsets.only(right: 12.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -93,8 +95,10 @@ class ContactsScreen extends StatelessWidget {
       ),
       child: PopupMenuButton(
         icon: const Icon(Icons.more_vert),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        elevation: 8,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.r),
+        ),
+        elevation: 8.r,
         onSelected: (value) => _handleMenuAction(context, value),
         itemBuilder: (context) => [
           _buildMenuItem('add', Icons.person_add, 'Add Contact', [
@@ -121,14 +125,14 @@ class ContactsScreen extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
               gradient: LinearGradient(colors: gradientColors),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(8.r),
             ),
-            child: Icon(icon, size: 18, color: Colors.white),
+            child: Icon(icon, size: 18.w, color: Colors.white),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12.w),
           Text(text),
         ],
       ),
@@ -174,11 +178,11 @@ class ContactsScreen extends StatelessWidget {
         context.read<ContactsCubit>().refreshContacts();
       },
       child: ListView.builder(
-        padding: const EdgeInsets.only(
-          top: 100,
-          bottom: 20,
-          left: 16,
-          right: 16,
+        padding: EdgeInsets.only(
+          top: 100.h,
+          bottom: 20.h,
+          left: 16.w,
+          right: 16.w,
         ),
         itemCount: contacts.length,
         itemBuilder: (context, index) {
@@ -186,7 +190,17 @@ class ContactsScreen extends StatelessWidget {
           return ContactListItem(
             contact: contact,
             onTap: () {
-              // TODO: Navigate to chat or contact details
+              // Navigate to chat room
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatRoomScreen(
+                    chatId: contact.id,
+                    chatName: contact.name,
+                    isOnline: false, // TODO: Get online status
+                  ),
+                ),
+              );
             },
           );
         },
@@ -199,16 +213,19 @@ class ContactsScreen extends StatelessWidget {
       builder: (context, state) {
         return Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16.r),
             gradient: const LinearGradient(
-              colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
+              colors: [
+                Color.fromARGB(255, 79, 79, 80),
+                Color.fromARGB(255, 122, 75, 162),
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF667EEA).withOpacity(0.4),
-                blurRadius: 20,
+                color: const Color.fromARGB(255, 79, 79, 80).withOpacity(0.4),
+                blurRadius: 20.r,
                 offset: const Offset(0, 10),
               ),
             ],
@@ -217,7 +234,7 @@ class ContactsScreen extends StatelessWidget {
             onPressed: () => _showAddContactBottomSheet(context),
             backgroundColor: Colors.transparent,
             elevation: 0,
-            child: const Icon(Icons.person_add, size: 28),
+            child: Icon(Icons.person_add, size: 28.w),
           ),
         );
       },
