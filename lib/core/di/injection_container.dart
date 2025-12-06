@@ -27,7 +27,7 @@ import 'package:wimo/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:wimo/features/user/data/datasource/user_remote_data_source.dart';
 import 'package:wimo/features/contacts/data/datasources/contact_remote_data_source.dart';
 import 'package:wimo/features/chat/data/datasource/chat_remote_data_source.dart';
-import 'package:wimo/features/chat/data/datasource/message_remote_data_source.dart';
+import 'package:wimo/features/chat/data/datasources/message_remote_data_source.dart';
 import 'package:wimo/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:wimo/features/chat/domain/repositories/chat_repository.dart';
 import 'package:wimo/features/chat/domain/usecases/get_chats_usecase.dart';

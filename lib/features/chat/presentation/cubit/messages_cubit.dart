@@ -140,16 +140,21 @@ class MessagesCubit extends Cubit<MessagesState> {
 
   /// Show typing indicator
   void showTyping(String userId, String userName) {
-    if (state is MessagesLoaded || state is UserTyping) {
-      emit(UserTyping(userId: userId, userName: userName));
+    AppLogger.info('User $userName is typing');
+    emit(
+      UserTyping(
+        userId: userId,
+        userName: userName,
+        messages: _currentMessages,
+      ),
+    );
 
-      // Auto-hide after 3 seconds if no stop event received
-      Future.delayed(const Duration(seconds: 3), () {
-        if (!isClosed && state is UserTyping) {
-          emit(MessagesLoaded(messages: _currentMessages));
-        }
-      });
-    }
+    // Auto-hide typing indicator after 3 seconds
+    Future.delayed(const Duration(seconds: 3), () {
+      if (state is UserTyping) {
+        emit(MessagesLoaded(messages: _currentMessages));
+      }
+    });
   }
 
   /// Emit typing event

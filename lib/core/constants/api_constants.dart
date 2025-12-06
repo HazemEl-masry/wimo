@@ -30,7 +30,8 @@ class ApiConstants {
   // Messages Endpoints
   static const String messages = '/messages';
   static const String sendMessage = messages;
-  static const String getMessages = '$messages/:chatId';
+  // Messages are accessed as a nested resource under chats
+  static String getChatMessages(String chatId) => '/chats/$chatId/messages';
 
   // Socket Events
   static const String socketConnect = 'connect';

@@ -6,8 +6,9 @@ import 'package:wimo/features/chat/presentation/cubit/messages_cubit.dart';
 import 'package:wimo/features/chat/presentation/cubit/messages_state.dart';
 import 'package:wimo/features/chat/presentation/widgets/date_separator.dart';
 import 'package:wimo/features/chat/presentation/widgets/message_bubble.dart';
-import 'package:wimo/features/chat/presentation/widgets/message_input.dart';
+import 'package:wimo/features/chat/presentation/widgets/message_input_with_typing.dart';
 import 'package:wimo/features/chat/presentation/widgets/typing_bubble.dart';
+import 'package:wimo/features/app/presentation/cubit/app_state_cubit.dart';
 
 /// Individual chat room screen
 class ChatRoomScreen extends StatelessWidget {
@@ -34,7 +35,7 @@ class ChatRoomScreen extends StatelessWidget {
         body: Column(
           children: [
             Expanded(child: _buildMessagesList()),
-            _buildMessageInput(context),
+            MessageInputWithTyping(chatId: chatId),
           ],
         ),
       ),
@@ -124,108 +125,171 @@ class ChatRoomScreen extends StatelessWidget {
         if (state is MessagesLoading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is MessagesError) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.error_outline, size: 64.w, color: Colors.red),
-                SizedBox(height: 16.h),
-                Text(
-                  'Failed to load messages',
-                  style: TextStyle(fontSize: 16.sp, color: Colors.grey[600]),
+          return RefreshIndicator(
+            onRefresh: () async {
+              context.read<MessagesCubit>().loadMessages(chatId);
+              await Future.delayed(const Duration(milliseconds: 500));
+            },
+            child: Center(
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, size: 64.w, color: Colors.red),
+                    SizedBox(height: 16.h),
+                    Text(
+                      'Failed to load messages',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 32.w),
+                      child: Text(
+                        state.errorMessage,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: Colors.grey[500],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+                    ElevatedButton(
+                      onPressed: () =>
+                          context.read<MessagesCubit>().loadMessages(chatId),
+                      child: const Text('Retry'),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 16.h),
-                ElevatedButton(
-                  onPressed: () =>
-                      context.read<MessagesCubit>().loadMessages(chatId),
-                  child: const Text('Retry'),
-                ),
-              ],
+              ),
             ),
           );
         } else if (state is MessagesLoaded) {
           if (state.messages.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.chat_bubble_outline,
-                    size: 80.w,
-                    color: Colors.grey[300],
+            return RefreshIndicator(
+              onRefresh: () async {
+                context.read<MessagesCubit>().loadMessages(chatId);
+                await Future.delayed(const Duration(milliseconds: 500));
+              },
+              child: Center(
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.chat_bubble_outline,
+                        size: 80.w,
+                        color: Colors.grey[300],
+                      ),
+                      SizedBox(height: 16.h),
+                      Text(
+                        'No messages yet',
+                        style: TextStyle(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+                      Text(
+                        'Start the conversation!',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 16.h),
-                  Text(
-                    'No messages yet',
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    'Start the conversation!',
-                    style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
-                  ),
-                ],
+                ),
               ),
             );
           }
 
-          return ListView.builder(
-            reverse: true,
-            padding: EdgeInsets.symmetric(vertical: 16.h),
-            itemCount: state.messages.length,
-            itemBuilder: (context, index) {
-              final message = state.messages[index];
-              final isMe =
-                  message.senderId == 'current_user_id'; // TODO: Get from auth
-
-              // Show date separator if needed
-              final previousMessage = index < state.messages.length - 1
-                  ? state.messages[index + 1]
-                  : null;
-              final showDateSeparator =
-                  previousMessage == null ||
-                  !_isSameDay(message.createdAt, previousMessage.createdAt);
-
-              return Column(
-                children: [
-                  if (showDateSeparator) DateSeparator(date: message.createdAt),
-                  MessageBubble(message: message, isMe: isMe),
-                ],
-              );
+          return RefreshIndicator(
+            onRefresh: () async {
+              context.read<MessagesCubit>().loadMessages(chatId);
+              await Future.delayed(const Duration(milliseconds: 500));
             },
+            child: ListView.builder(
+              reverse: true,
+              padding: EdgeInsets.symmetric(vertical: 16.h),
+              itemCount: state.messages.length,
+              itemBuilder: (context, index) {
+                final message = state.messages[index];
+                final currentUserId =
+                    context.read<AppStateCubit>().state.currentUserId ?? '';
+                final isMe = message.senderId == currentUserId;
+
+                // Show date separator if needed
+                final previousMessage = index < state.messages.length - 1
+                    ? state.messages[index + 1]
+                    : null;
+                final showDateSeparator =
+                    previousMessage == null ||
+                    !_isSameDay(message.createdAt, previousMessage.createdAt);
+
+                return Column(
+                  children: [
+                    if (showDateSeparator)
+                      DateSeparator(date: message.createdAt),
+                    MessageBubble(message: message, isMe: isMe),
+                  ],
+                );
+              },
+            ),
           );
         } else if (state is UserTyping) {
-          // Show typing indicator
-          return Stack(
-            children: [
-              ListView(), // Empty list
-              Positioned(
-                bottom: 16.h,
-                left: 16.w,
-                child: const TypingBubble(isMe: false),
-              ),
-            ],
+          // Show typing indicator with existing messages
+          final messages = state.messages;
+
+          return RefreshIndicator(
+            onRefresh: () async {
+              context.read<MessagesCubit>().loadMessages(chatId);
+              await Future.delayed(const Duration(milliseconds: 500));
+            },
+            child: ListView.builder(
+              reverse: true,
+              padding: EdgeInsets.symmetric(vertical: 16.h),
+              itemCount: messages.length + 1, // +1 for typing indicator
+              itemBuilder: (context, index) {
+                // Show typing bubble at the top (index 0 in reversed list)
+                if (index == 0) {
+                  return Padding(
+                    padding: EdgeInsets.only(left: 16.w, bottom: 8.h),
+                    child: Row(children: [const TypingBubble(isMe: false)]),
+                  );
+                }
+
+                // Show messages (offset by 1 because of typing indicator)
+                final message = messages[index - 1];
+                final currentUserId =
+                    context.read<AppStateCubit>().state.currentUserId ?? '';
+                final isMe = message.senderId == currentUserId;
+
+                final previousMessage = index - 1 < messages.length
+                    ? messages[index]
+                    : null;
+                final showDateSeparator =
+                    previousMessage == null ||
+                    !_isSameDay(message.createdAt, previousMessage.createdAt);
+
+                return Column(
+                  children: [
+                    if (showDateSeparator)
+                      DateSeparator(date: message.createdAt),
+                    MessageBubble(message: message, isMe: isMe),
+                  ],
+                );
+              },
+            ),
           );
         }
 
         return const SizedBox();
-      },
-    );
-  }
-
-  Widget _buildMessageInput(BuildContext context) {
-    return MessageInput(
-      onSend: (text) {
-        context.read<MessagesCubit>().sendMessage(
-          chatId: chatId,
-          content: text,
-        );
-      },
-      onTyping: () {
-        context.read<MessagesCubit>().sendTyping();
       },
     );
   }

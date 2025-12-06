@@ -64,9 +64,14 @@ class MessagesError extends MessagesState {
 class UserTyping extends MessagesState {
   final String userId;
   final String userName;
+  final List<MessageEntity> messages;
 
-  const UserTyping({required this.userId, required this.userName});
+  const UserTyping({
+    required this.userId,
+    required this.userName,
+    required this.messages,
+  });
 
   @override
-  List<Object?> get props => [userId, userName];
+  List<Object?> get props => [userId, userName, messages];
 }

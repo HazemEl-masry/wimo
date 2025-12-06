@@ -7,6 +7,7 @@ import 'package:wimo/features/app/presentation/cubit/connection_cubit.dart';
 import 'package:wimo/features/auth/presentation/cubit/auth_phone_cubit/auth_phone_cubit.dart';
 import 'package:wimo/features/auth/presentation/cubit/verify_otp_cubit/verify_otp_cubit.dart';
 import 'package:wimo/features/auth/presentation/screens/auth_screen.dart';
+import 'package:wimo/features/chat/presentation/screens/chat_room_screen.dart';
 import 'package:wimo/features/contacts/presentation/screens/contacts_screen.dart';
 import 'package:wimo/features/home/presentation/cubit/chat_list_cubit.dart';
 import 'package:wimo/features/home/presentation/screens/home_screen.dart';
@@ -100,6 +101,21 @@ class AppRouter {
             path: contacts,
             name: 'contacts',
             builder: (context, state) => const ContactsScreen(),
+          ),
+          GoRoute(
+            path: '/chat/:chatId',
+            name: 'chat',
+            builder: (context, state) {
+              final chatId = state.pathParameters['chatId']!;
+              final extra = state.extra as Map<String, dynamic>?;
+
+              return ChatRoomScreen(
+                chatId: chatId,
+                chatName: extra?['recipientName'] ?? 'Chat',
+                chatAvatar: extra?['recipientAvatar'],
+                isOnline: extra?['isOnline'] ?? false,
+              );
+            },
           ),
           GoRoute(
             path: settings,

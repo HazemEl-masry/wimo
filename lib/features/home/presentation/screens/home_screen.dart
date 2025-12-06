@@ -7,7 +7,6 @@ import 'package:wimo/features/home/presentation/cubit/chat_list_cubit.dart';
 import 'package:wimo/features/home/presentation/widgets/chat_tile.dart';
 import 'package:wimo/features/home/presentation/widgets/profile_widget.dart';
 import 'package:wimo/features/user/presentation/cubit/profile_cubit.dart';
-import 'package:wimo/core/widgets/overlay_message.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -175,11 +174,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   return ChatTile(
                     chat: chat,
                     onTap: () {
-                      // TODO: Navigate to individual chat screen
-                      OverlayMessage.show(
-                        context: context,
-                        message: 'Chat screen not implemented yet',
-                        isError: false,
+                      // Determine chat display info
+                      final isGroupChat = chat.type == 'group';
+                      final recipientName = isGroupChat
+                          ? (chat.groupName ?? 'Group Chat')
+                          : (chat.otherParticipant?.name ?? 'Unknown');
+                      final recipientAvatar = isGroupChat
+                          ? chat.groupAvatar
+                          : chat.otherParticipant?.avatar;
+                      final isOnline = isGroupChat
+                          ? false
+                          : (chat.otherParticipant?.isOnline ?? false);
+
+                      // Navigate to chat room screen
+                      GoRouter.of(context).push(
+                        '/chat/${chat.id}',
+                        extra: {
+                          'chatId': chat.id,
+                          'recipientName': recipientName,
+                          'recipientAvatar': recipientAvatar,
+                          'isOnline': isOnline,
+                        },
                       );
                     },
                   );

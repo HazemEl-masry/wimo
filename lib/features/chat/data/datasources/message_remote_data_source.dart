@@ -39,27 +39,31 @@ class MessageRemoteDataSourceImpl implements MessageRemoteDataSource {
     String? before,
   }) async {
     try {
-      AppLogger.logRequest('GET', '${ApiConstants.messages}/$chatId');
+      final endpoint = ApiConstants.getChatMessages(chatId);
+      AppLogger.logRequest('GET', endpoint);
 
       final queryParams = <String, dynamic>{};
       if (limit != null) queryParams['limit'] = limit;
       if (before != null) queryParams['before'] = before;
 
-      final response = await apiServices.getRequest(
-        endPoint: '${ApiConstants.messages}/$chatId',
-      );
+      final response = await apiServices.getRequest(endPoint: endpoint);
 
       if (response.statusCode == 200) {
         final List messages = response.data['data']['messages'];
         AppLogger.logResponse(
           response.statusCode!,
-          '${ApiConstants.messages}/$chatId',
+          endpoint,
           'Found ${messages.length} messages',
         );
         return messages.map((json) => MessageModel.fromJson(json)).toList();
       } else {
-        AppLogger.error('Failed to get messages', response.statusMessage);
-        throw Exception('Failed to get messages: ${response.statusMessage}');
+        AppLogger.error(
+          'Failed to get messages from $endpoint',
+          response.statusMessage,
+        );
+        throw Exception(
+          'Failed to get messages from $endpoint: ${response.statusMessage}',
+        );
       }
     } catch (e, stackTrace) {
       AppLogger.error('Failed to get messages', e, stackTrace);
@@ -76,28 +80,27 @@ class MessageRemoteDataSourceImpl implements MessageRemoteDataSource {
   }) async {
     try {
       final data = {
-        'chatId': chatId,
         'content': content,
         'type': type,
         if (mediaUrl != null) 'mediaUrl': mediaUrl,
       };
 
-      AppLogger.logRequest('POST', ApiConstants.messages, data);
+      final endpoint = ApiConstants.getChatMessages(chatId);
+      AppLogger.logRequest('POST', endpoint, data);
 
       final response = await apiServices.postRequest(
-        endPoint: ApiConstants.messages,
+        endPoint: endpoint,
         data: data,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        AppLogger.logResponse(
-          response.statusCode!,
-          ApiConstants.messages,
-          'Message sent',
-        );
+        AppLogger.logResponse(response.statusCode!, endpoint, 'Message sent');
         return MessageModel.fromJson(response.data['data']['message']);
       } else {
-        AppLogger.error('Failed to send message', response.statusMessage);
+        AppLogger.error(
+          'Failed to send message to $endpoint',
+          response.statusMessage,
+        );
         throw Exception('Failed to send message: ${response.statusMessage}');
       }
     } catch (e, stackTrace) {
